@@ -4,6 +4,8 @@ import { NextResponse } from "next/server";
 import { requireRouteUser } from "@/lib/auth/route-user";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
+export const preferredRegion = "fra1";
+
 function revalidateTradingPaths(id: string) {
   revalidatePath("/dashboard");
   revalidatePath("/trades");

@@ -1,15 +1,8 @@
-import { redirect } from "next/navigation";
-
 import { LoginCard } from "@/components/trades/login-card";
-import { getOptionalUser } from "@/lib/auth/require-user";
 
-export default async function LoginPage() {
-  const { user } = await getOptionalUser();
+export const preferredRegion = "fra1";
 
-  if (user) {
-    redirect("/dashboard");
-  }
-
+export default function LoginPage() {
   return (
     <main className="page-shell relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-16">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(61,217,180,0.08),transparent_35%)]" />
@@ -32,4 +25,3 @@ export default async function LoginPage() {
     </main>
   );
 }
-

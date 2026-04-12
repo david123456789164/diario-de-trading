@@ -7,6 +7,8 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { tradePayloadSchema } from "@/lib/trading/schemas";
 import { mapPayloadToUpdate } from "@/lib/trading/transform";
 
+export const preferredRegion = "fra1";
+
 function revalidateTradingPaths(id: string) {
   revalidatePath("/dashboard");
   revalidatePath("/trades");

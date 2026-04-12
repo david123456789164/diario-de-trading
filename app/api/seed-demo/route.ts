@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 
 import { requireRouteUser } from "@/lib/auth/route-user";
 
+export const preferredRegion = "fra1";
+
 export async function POST() {
   const auth = await requireRouteUser();
   if ("error" in auth) return auth.error;
@@ -19,4 +21,3 @@ export async function POST() {
 
   return NextResponse.json({ inserted: data ?? 0 });
 }
-

@@ -3,6 +3,8 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
 import { requireUser } from "@/lib/auth/require-user";
 
+export const preferredRegion = "fra1";
+
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const { user } = await requireUser();
 
@@ -19,4 +21,3 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     </div>
   );
 }
-

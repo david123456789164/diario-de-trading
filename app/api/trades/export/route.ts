@@ -4,6 +4,8 @@ import { requireRouteUser } from "@/lib/auth/route-user";
 import { buildTradesCsv } from "@/lib/trading/csv";
 import { filterTrades, parseTradeFilters } from "@/lib/trading/filters";
 
+export const preferredRegion = "fra1";
+
 export async function GET(request: Request) {
   const auth = await requireRouteUser();
   if ("error" in auth) return auth.error;
@@ -31,4 +33,3 @@ export async function GET(request: Request) {
     },
   });
 }
-
