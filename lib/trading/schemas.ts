@@ -1,93 +1,126 @@
 import { z } from "zod";
 
+type Translate = (key: string) => string;
+
 const emptyStringToNull = (value: unknown) =>
   value === "" || value === undefined || value === null ? null : value;
 
-const requiredPositiveNumber = (message: string) =>
+const requiredPositiveNumber = (message: string, t: Translate) =>
   z.preprocess(
     (value) => Number(value),
     z
       .number({ invalid_type_error: message, required_error: message })
-      .finite("Ingresa un número válido.")
+      .finite(t("validation.validNumber"))
       .positive(message),
   );
 
-const optionalPositiveNumber = () =>
+const optionalPositiveNumber = (t: Translate) =>
   z.preprocess(
     (value) => {
       const normalized = emptyStringToNull(value);
       return normalized === null ? null : Number(normalized);
     },
-    z.number().finite("Ingresa un número válido.").positive("Debe ser mayor a 0.").nullable(),
+    z.number().finite(t("validation.validNumber")).positive(t("validation.positive")).nullable(),
   );
 
-const optionalTrimmedText = z.preprocess(
-  (value) => {
-    const normalized = emptyStringToNull(value);
-    if (typeof normalized !== "string") {
-      return normalized;
-    }
+const optionalTrimmedText = (t: Translate) =>
+  z.preprocess(
+    (value) => {
+      const normalized = emptyStringToNull(value);
+      if (typeof normalized !== "string") {
+        return normalized;
+      }
 
-    const trimmed = normalized.trim();
-    return trimmed.length === 0 ? null : trimmed;
-  },
-  z.string().max(4000, "El texto es demasiado largo.").nullable(),
-);
+      const trimmed = normalized.trim();
+      return trimmed.length === 0 ? null : trimmed;
+    },
+    z.string().max(4000, t("validation.textTooLong")).nullable(),
+  );
 
-const requiredDateString = z
-  .string({ required_error: "La fecha es obligatoria." })
-  .min(1, "La fecha es obligatoria.")
-  .refine((value) => !Number.isNaN(new Date(value).getTime()), "Ingresa una fecha válida.");
-
-const optionalDateString = z.preprocess(
-  (value) => {
-    const normalized = emptyStringToNull(value);
-    return normalized === null ? null : String(normalized);
-  },
+const requiredDateString = (t: Translate) =>
   z
-    .string()
-    .refine((value) => !Number.isNaN(new Date(value).getTime()), "Ingresa una fecha válida.")
-    .nullable(),
-);
+    .string({ required_error: t("validation.requiredDate") })
+    .min(1, t("validation.requiredDate"))
+    .refine((value) => !Number.isNaN(new Date(value).getTime()), t("validation.validDate"));
 
-export const tradePayloadSchema = z
-  .object({
+const optionalDateString = (t: Translate) =>
+  z.preprocess(
+    (value) => {
+      const normalized = emptyStringToNull(value);
+      return normalized === null ? null : String(normalized);
+    },
+    z
+      .string()
+      .refine((value) => !Number.isNaN(new Date(value).getTime()), t("validation.validDate"))
+      .nullable(),
+  );
+
+const fallbackMessages: Record<string, string> = {
+  "validation.validNumber": "Ingresa un número válido.",
+  "validation.positive": "Debe ser mayor a 0.",
+  "validation.textTooLong": "El texto es demasiado largo.",
+  "validation.requiredDate": "La fecha es obligatoria.",
+  "validation.validDate": "Ingresa una fecha válida.",
+  "validation.tickerRequired": "El ticker es obligatorio.",
+  "validation.tickerTooLong": "El ticker es demasiado largo.",
+  "validation.setupRequired": "El setup es obligatorio.",
+  "validation.setupTooLong": "El setup es demasiado largo.",
+  "validation.entryPricePositive": "El precio de entrada debe ser mayor a 0.",
+  "validation.quantityPositive": "La cantidad debe ser mayor a 0.",
+  "validation.notNegative": "No puede ser negativo.",
+  "validation.maxTags": "Puedes guardar hasta 12 etiquetas.",
+  "validation.closedNeedsExitDate": "Si el trade está cerrado, la fecha de salida es obligatoria.",
+  "validation.closedNeedsExitPrice": "Si el trade está cerrado, el precio de salida es obligatorio.",
+  "validation.exitDateNeedsPrice": "Si completas la fecha de salida, también debes indicar el precio de salida.",
+  "validation.exitPriceNeedsDate": "Si completas el precio de salida, también debes indicar la fecha de salida.",
+  "validation.exitBeforeEntry": "La fecha de salida no puede ser anterior a la fecha de entrada.",
+  "validation.longStop": "En un long, el stop loss debe quedar por debajo del precio de entrada.",
+  "validation.longTakeProfit": "En un long, el take profit debe quedar por encima del precio de entrada.",
+  "validation.shortStop": "En un short, el stop loss debe quedar por encima del precio de entrada.",
+  "validation.shortTakeProfit": "En un short, el take profit debe quedar por debajo del precio de entrada.",
+};
+
+const fallbackT: Translate = (key) => fallbackMessages[key] ?? key;
+
+export function createTradePayloadSchema(t: Translate = fallbackT) {
+  return z
+    .object({
     ticker: z
-      .string({ required_error: "El ticker es obligatorio." })
+      .string({ required_error: t("validation.tickerRequired") })
       .trim()
-      .min(1, "El ticker es obligatorio.")
-      .max(20, "El ticker es demasiado largo."),
+      .min(1, t("validation.tickerRequired"))
+      .max(20, t("validation.tickerTooLong")),
     assetType: z.enum(["stock", "etf"]),
     direction: z.enum(["long", "short"]),
     setup: z
-      .string({ required_error: "El setup es obligatorio." })
+      .string({ required_error: t("validation.setupRequired") })
       .trim()
-      .min(1, "El setup es obligatorio.")
-      .max(120, "El setup es demasiado largo."),
-    entryDate: requiredDateString,
-    exitDate: optionalDateString,
-    entryPrice: requiredPositiveNumber("El precio de entrada debe ser mayor a 0."),
-    exitPrice: optionalPositiveNumber(),
-    initialStopLoss: optionalPositiveNumber(),
-    initialTakeProfit: optionalPositiveNumber(),
-    quantity: requiredPositiveNumber("La cantidad debe ser mayor a 0."),
+      .min(1, t("validation.setupRequired"))
+      .max(120, t("validation.setupTooLong")),
+    entryDate: requiredDateString(t),
+    exitDate: optionalDateString(t),
+    entryPrice: requiredPositiveNumber(t("validation.entryPricePositive"), t),
+    exitPrice: optionalPositiveNumber(t),
+    initialStopLoss: optionalPositiveNumber(t),
+    initialTakeProfit: optionalPositiveNumber(t),
+    quantity: requiredPositiveNumber(t("validation.quantityPositive"), t),
     fees: z.preprocess(
       (value) => {
         const normalized = emptyStringToNull(value);
         return normalized === null ? 0 : Number(normalized);
       },
-      z.number().finite("Ingresa un número válido.").min(0, "No puede ser negativo."),
+      z.number().finite(t("validation.validNumber")).min(0, t("validation.notNegative")),
     ),
-    accountSize: optionalPositiveNumber(),
-    plannedRiskAmount: optionalPositiveNumber(),
-    thesis: optionalTrimmedText,
-    notes: optionalTrimmedText,
-    mistakes: optionalTrimmedText,
-    lessonLearned: optionalTrimmedText,
+    accountSize: optionalPositiveNumber(t),
+    plannedRiskAmount: optionalPositiveNumber(t),
+    thesis: optionalTrimmedText(t),
+    notes: optionalTrimmedText(t),
+    mistakes: optionalTrimmedText(t),
+    lessonLearned: optionalTrimmedText(t),
     status: z.enum(["open", "closed", "cancelled", "invalidated"]),
     tags: z
       .array(z.string().trim().min(1).max(40))
-      .max(12, "Puedes guardar hasta 12 etiquetas.")
+      .max(12, t("validation.maxTags"))
       .default([]),
   })
   .superRefine((value, ctx) => {
@@ -99,7 +132,7 @@ export const tradePayloadSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["exitDate"],
-          message: "Si el trade está cerrado, la fecha de salida es obligatoria.",
+          message: t("validation.closedNeedsExitDate"),
         });
       }
 
@@ -107,7 +140,7 @@ export const tradePayloadSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["exitPrice"],
-          message: "Si el trade está cerrado, el precio de salida es obligatorio.",
+          message: t("validation.closedNeedsExitPrice"),
         });
       }
     }
@@ -116,7 +149,7 @@ export const tradePayloadSchema = z
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["exitPrice"],
-        message: "Si completas la fecha de salida, también debes indicar el precio de salida.",
+        message: t("validation.exitDateNeedsPrice"),
       });
     }
 
@@ -124,7 +157,7 @@ export const tradePayloadSchema = z
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["exitDate"],
-        message: "Si completas el precio de salida, también debes indicar la fecha de salida.",
+        message: t("validation.exitPriceNeedsDate"),
       });
     }
 
@@ -132,7 +165,7 @@ export const tradePayloadSchema = z
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["exitDate"],
-        message: "La fecha de salida no puede ser anterior a la fecha de entrada.",
+        message: t("validation.exitBeforeEntry"),
       });
     }
 
@@ -141,7 +174,7 @@ export const tradePayloadSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["initialStopLoss"],
-          message: "En un long, el stop loss debe quedar por debajo del precio de entrada.",
+          message: t("validation.longStop"),
         });
       }
 
@@ -149,7 +182,7 @@ export const tradePayloadSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["initialTakeProfit"],
-          message: "En un long, el take profit debe quedar por encima del precio de entrada.",
+          message: t("validation.longTakeProfit"),
         });
       }
     }
@@ -159,7 +192,7 @@ export const tradePayloadSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["initialStopLoss"],
-          message: "En un short, el stop loss debe quedar por encima del precio de entrada.",
+          message: t("validation.shortStop"),
         });
       }
 
@@ -167,11 +200,14 @@ export const tradePayloadSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["initialTakeProfit"],
-          message: "En un short, el take profit debe quedar por debajo del precio de entrada.",
+          message: t("validation.shortTakeProfit"),
         });
       }
     }
   });
+}
+
+export const tradePayloadSchema = createTradePayloadSchema();
 
 export const tradeFilterSchema = z.object({
   q: z.string().optional().default(""),
@@ -189,8 +225,9 @@ export const tradeFilterSchema = z.object({
   page: z.coerce.number().int().min(1).optional().default(1),
 });
 
-export type TradePayload = z.output<typeof tradePayloadSchema>;
-export type TradeFormValues = z.input<typeof tradePayloadSchema>;
+export type TradePayloadSchema = ReturnType<typeof createTradePayloadSchema>;
+export type TradePayload = z.output<TradePayloadSchema>;
+export type TradeFormValues = z.input<TradePayloadSchema>;
 export type TradeFilters = z.infer<typeof tradeFilterSchema>;
 
 export function normalizeTagList(input: string) {

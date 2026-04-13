@@ -1,6 +1,7 @@
 "use client";
 
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { useTranslation } from "react-i18next";
 
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 
@@ -10,16 +11,18 @@ type Item = {
 };
 
 export function RDistributionChart({ data }: { data: Item[] }) {
+  const { t } = useTranslation();
+
   return (
     <Card className="space-y-4">
       <div className="space-y-1">
-        <CardTitle>Distribución de R</CardTitle>
-        <CardDescription>Mide si tus ganancias son suficientemente grandes frente a tus pérdidas.</CardDescription>
+        <CardTitle>{t("charts.rDistribution.title")}</CardTitle>
+        <CardDescription>{t("charts.rDistribution.description")}</CardDescription>
       </div>
 
       {data.every((item) => item.count === 0) ? (
         <div className="flex h-[280px] items-center justify-center rounded-2xl border border-dashed border-stroke text-sm text-muted">
-          La distribución aparecerá cuando cierres trades con riesgo definido.
+          {t("charts.rDistribution.empty")}
         </div>
       ) : (
         <div className="h-[280px]">
@@ -37,4 +40,3 @@ export function RDistributionChart({ data }: { data: Item[] }) {
     </Card>
   );
 }
-

@@ -4,8 +4,9 @@ import { ZodError } from "zod";
 
 import { requireRouteUser } from "@/lib/auth/route-user";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { tradePayloadSchema } from "@/lib/trading/schemas";
+import { createTradePayloadSchema } from "@/lib/trading/schemas";
 import { mapPayloadToUpdate } from "@/lib/trading/transform";
+import { getRequestLanguage, getTranslationForLanguage } from "@/src/i18n/server";
 
 export const preferredRegion = "fra1";
 
@@ -37,16 +38,17 @@ async function getExistingTrade(
 }
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await requireRouteUser();
+  const { t } = getTranslationForLanguage(getRequestLanguage(request));
+  const auth = await requireRouteUser(request);
   if ("error" in auth) return auth.error;
   const { id } = await params;
 
   try {
-    const payload = tradePayloadSchema.parse(await request.json());
+    const payload = createTradePayloadSchema(t).parse(await request.json());
     const existing = await getExistingTrade(auth.supabase, auth.user.id, id);
 
     if (!existing) {
-      return NextResponse.json({ error: "Trade no encontrado." }, { status: 404 });
+      return NextResponse.json({ error: t("api.tradeNotFound") }, { status: 404 });
     }
 
     const { data, error } = await (auth.supabase.from("trades") as any)
@@ -57,7 +59,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       .single();
 
     if (error || !data) {
-      return NextResponse.json({ error: "No se pudo actualizar el trade." }, { status: 400 });
+      return NextResponse.json({ error: t("api.updateTradeError") }, { status: 400 });
     }
 
     revalidateTradingPaths(id);
@@ -66,25 +68,26 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     if (error instanceof ZodError) {
       return NextResponse.json(
         {
-          error: "Revisa los campos del formulario.",
+          error: t("api.reviewForm"),
           fieldErrors: error.flatten().fieldErrors,
         },
         { status: 422 },
       );
     }
 
-    return NextResponse.json({ error: "Error inesperado al actualizar el trade." }, { status: 500 });
+    return NextResponse.json({ error: t("api.updateUnexpected") }, { status: 500 });
   }
 }
 
-export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await requireRouteUser();
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { t } = getTranslationForLanguage(getRequestLanguage(request));
+  const auth = await requireRouteUser(request);
   if ("error" in auth) return auth.error;
   const { id } = await params;
 
   const existing = await getExistingTrade(auth.supabase, auth.user.id, id);
   if (!existing) {
-    return NextResponse.json({ error: "Trade no encontrado." }, { status: 404 });
+    return NextResponse.json({ error: t("api.tradeNotFound") }, { status: 404 });
   }
 
   if (existing.screenshot_path) {
@@ -96,7 +99,7 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
     .eq("id", id)
     .eq("user_id", auth.user.id);
   if (error) {
-    return NextResponse.json({ error: "No se pudo eliminar el trade." }, { status: 400 });
+    return NextResponse.json({ error: t("api.deleteTradeError") }, { status: 400 });
   }
 
   revalidateTradingPaths(id);

@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getRequestLanguage, getTranslationForLanguage } from "@/src/i18n/server";
 
-export async function requireRouteUser() {
+export async function requireRouteUser(request?: Request) {
+  const { t } = getTranslationForLanguage(request ? getRequestLanguage(request) : null);
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },
@@ -10,10 +12,9 @@ export async function requireRouteUser() {
 
   if (!user) {
     return {
-      error: NextResponse.json({ error: "No autorizado. Inicia sesión para continuar." }, { status: 401 }),
+      error: NextResponse.json({ error: t("api.unauthorized") }, { status: 401 }),
     };
   }
 
   return { user, supabase };
 }
-

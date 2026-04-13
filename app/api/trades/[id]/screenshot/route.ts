@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 import { requireRouteUser } from "@/lib/auth/route-user";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getRequestLanguage, getTranslationForLanguage } from "@/src/i18n/server";
 
 export const preferredRegion = "fra1";
 
@@ -33,28 +34,29 @@ async function getTradeForImage(
 }
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await requireRouteUser();
+  const { t } = getTranslationForLanguage(getRequestLanguage(request));
+  const auth = await requireRouteUser(request);
   if ("error" in auth) return auth.error;
   const { id } = await params;
 
   const trade = await getTradeForImage(auth.supabase, auth.user.id, id);
   if (!trade) {
-    return NextResponse.json({ error: "Trade no encontrado." }, { status: 404 });
+    return NextResponse.json({ error: t("api.tradeNotFound") }, { status: 404 });
   }
 
   const formData = await request.formData();
   const file = formData.get("file");
 
   if (!(file instanceof File)) {
-    return NextResponse.json({ error: "No se recibió ningún archivo." }, { status: 400 });
+    return NextResponse.json({ error: t("api.noFile") }, { status: 400 });
   }
 
   if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
-    return NextResponse.json({ error: "Formato no permitido. Usa PNG, JPG o WEBP." }, { status: 400 });
+    return NextResponse.json({ error: t("api.invalidFileFormat") }, { status: 400 });
   }
 
   if (file.size > 5 * 1024 * 1024) {
-    return NextResponse.json({ error: "La imagen supera el máximo de 5 MB." }, { status: 400 });
+    return NextResponse.json({ error: t("api.fileTooLarge") }, { status: 400 });
   }
 
   const extension = file.name.split(".").pop()?.toLowerCase() || (file.type === "image/webp" ? "webp" : "jpg");
@@ -67,7 +69,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   });
 
   if (upload.error) {
-    return NextResponse.json({ error: "No se pudo subir la imagen." }, { status: 400 });
+    return NextResponse.json({ error: t("api.uploadImageError") }, { status: 400 });
   }
 
   const update = await (auth.supabase.from("trades") as any)
@@ -80,7 +82,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   if (update.error) {
     await auth.supabase.storage.from("trade-screenshots").remove([path]);
-    return NextResponse.json({ error: "La imagen se subió, pero no se pudo vincular al trade." }, { status: 400 });
+    return NextResponse.json({ error: t("api.linkImageError") }, { status: 400 });
   }
 
   if (trade.screenshot_path) {
@@ -91,14 +93,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   return NextResponse.json({ success: true });
 }
 
-export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await requireRouteUser();
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { t } = getTranslationForLanguage(getRequestLanguage(request));
+  const auth = await requireRouteUser(request);
   if ("error" in auth) return auth.error;
   const { id } = await params;
 
   const trade = await getTradeForImage(auth.supabase, auth.user.id, id);
   if (!trade) {
-    return NextResponse.json({ error: "Trade no encontrado." }, { status: 404 });
+    return NextResponse.json({ error: t("api.tradeNotFound") }, { status: 404 });
   }
 
   if (trade.screenshot_path) {
@@ -114,7 +117,7 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
     .eq("user_id", auth.user.id);
 
   if (error) {
-    return NextResponse.json({ error: "No se pudo eliminar la imagen." }, { status: 400 });
+    return NextResponse.json({ error: t("api.deleteImageError") }, { status: 400 });
   }
 
   revalidateTradingPaths(id);

@@ -1,13 +1,15 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 import { Button } from "@/components/ui/button";
 
 export function ConfirmDialog({
   open,
   title,
   description,
-  confirmLabel = "Confirmar",
-  cancelLabel = "Cancelar",
+  confirmLabel,
+  cancelLabel,
   onConfirm,
   onCancel,
   loading = false,
@@ -21,6 +23,8 @@ export function ConfirmDialog({
   onCancel: () => void;
   loading?: boolean;
 }) {
+  const { t } = useTranslation();
+
   if (!open) return null;
 
   return (
@@ -32,14 +36,13 @@ export function ConfirmDialog({
         </div>
         <div className="mt-6 flex justify-end gap-3">
           <Button variant="secondary" onClick={onCancel} disabled={loading}>
-            {cancelLabel}
+            {cancelLabel ?? t("common.actions.cancel")}
           </Button>
           <Button variant="danger" onClick={onConfirm} disabled={loading}>
-            {loading ? "Eliminando..." : confirmLabel}
+            {loading ? t("common.states.deleting") : (confirmLabel ?? t("common.actions.confirm"))}
           </Button>
         </div>
       </div>
     </div>
   );
 }
-

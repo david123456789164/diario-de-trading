@@ -1,42 +1,48 @@
-import { format } from "date-fns";
+import type { AppLocale } from "@/src/i18n/settings";
 
-export function formatCurrency(value: number | null | undefined, currency = "USD") {
+const defaultLocale: AppLocale = "es";
+
+export function formatCurrency(value: number | null | undefined, currency = "USD", locale: AppLocale = defaultLocale) {
   if (value === null || value === undefined || Number.isNaN(value)) {
     return "—";
   }
 
-  return new Intl.NumberFormat("es-ES", {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency,
     maximumFractionDigits: 2,
   }).format(value);
 }
 
-export function formatNumber(value: number | null | undefined, decimals = 2) {
+export function formatNumber(value: number | null | undefined, decimals = 2, locale: AppLocale = defaultLocale) {
   if (value === null || value === undefined || Number.isNaN(value)) {
     return "—";
   }
 
-  return new Intl.NumberFormat("es-ES", {
+  return new Intl.NumberFormat(locale, {
     maximumFractionDigits: decimals,
     minimumFractionDigits: decimals,
   }).format(value);
 }
 
-export function formatPercent(value: number | null | undefined, decimals = 2) {
+export function formatPercent(value: number | null | undefined, decimals = 2, locale: AppLocale = defaultLocale) {
   if (value === null || value === undefined || Number.isNaN(value)) {
     return "—";
   }
 
-  return `${formatNumber(value, decimals)}%`;
+  return new Intl.NumberFormat(locale, {
+    style: "percent",
+    maximumFractionDigits: decimals,
+    minimumFractionDigits: decimals,
+  }).format(value / 100);
 }
 
-export function formatCompactCurrency(value: number | null | undefined, currency = "USD") {
+export function formatCompactCurrency(value: number | null | undefined, currency = "USD", locale: AppLocale = defaultLocale) {
   if (value === null || value === undefined || Number.isNaN(value)) {
     return "—";
   }
 
-  return new Intl.NumberFormat("es-ES", {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency,
     notation: "compact",
@@ -44,7 +50,7 @@ export function formatCompactCurrency(value: number | null | undefined, currency
   }).format(value);
 }
 
-export function formatDate(value: string | Date | null | undefined, fallback = "—") {
+export function formatDate(value: string | Date | null | undefined, fallback = "—", locale: AppLocale = defaultLocale) {
   if (!value) {
     return fallback;
   }
@@ -54,10 +60,14 @@ export function formatDate(value: string | Date | null | undefined, fallback = "
     return fallback;
   }
 
-  return format(date, "dd/MM/yyyy");
+  return new Intl.DateTimeFormat(locale, {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(date);
 }
 
-export function formatDateTime(value: string | Date | null | undefined, fallback = "—") {
+export function formatDateTime(value: string | Date | null | undefined, fallback = "—", locale: AppLocale = defaultLocale) {
   if (!value) {
     return fallback;
   }
@@ -67,22 +77,33 @@ export function formatDateTime(value: string | Date | null | undefined, fallback
     return fallback;
   }
 
-  return format(date, "dd/MM/yyyy HH:mm");
+  return new Intl.DateTimeFormat(locale, {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
 }
 
-export function formatHoldingDays(value: number | null | undefined) {
+export function formatHoldingDays(value: number | null | undefined, locale: AppLocale = defaultLocale) {
   if (value === null || value === undefined || Number.isNaN(value)) {
     return "—";
   }
 
-  return `${formatNumber(value, 1)} días`;
+  return new Intl.NumberFormat(locale, {
+    style: "unit",
+    unit: "day",
+    unitDisplay: "long",
+    maximumFractionDigits: 1,
+    minimumFractionDigits: 1,
+  }).format(value);
 }
 
-export function formatRatio(value: number | null | undefined, decimals = 2) {
+export function formatRatio(value: number | null | undefined, decimals = 2, locale: AppLocale = defaultLocale) {
   if (value === null || value === undefined || Number.isNaN(value)) {
     return "—";
   }
 
-  return `${formatNumber(value, decimals)}x`;
+  return `${formatNumber(value, decimals, locale)}x`;
 }
-

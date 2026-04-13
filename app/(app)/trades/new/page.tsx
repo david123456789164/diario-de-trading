@@ -1,16 +1,18 @@
 import { TradeForm } from "@/components/trades/trade-form";
 import { PageHeader } from "@/components/ui/page-header";
+import { getServerTranslation } from "@/src/i18n/server";
 
-export default function NewTradePage() {
+export default async function NewTradePage() {
+  const { t } = await getServerTranslation();
+
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow="Nuevo registro"
-        title="Crear trade"
-        description="Carga todos los datos relevantes de la operación para medir rendimiento, disciplina y calidad de ejecución."
+        eyebrow={t("trades.new.eyebrow")}
+        title={t("trades.new.title")}
+        description={t("trades.new.description")}
       />
       <TradeForm mode="create" />
     </div>
   );
 }
-

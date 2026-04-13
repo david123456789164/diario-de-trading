@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 
 import { requireRouteUser } from "@/lib/auth/route-user";
-import { tradePayloadSchema } from "@/lib/trading/schemas";
+import { createTradePayloadSchema } from "@/lib/trading/schemas";
 import { mapPayloadToInsert } from "@/lib/trading/transform";
+import { getRequestLanguage, getTranslationForLanguage } from "@/src/i18n/server";
 
 export const preferredRegion = "fra1";
 
@@ -20,11 +21,12 @@ function revalidateTradingPaths(id?: string) {
 }
 
 export async function POST(request: Request) {
-  const auth = await requireRouteUser();
+  const { t } = getTranslationForLanguage(getRequestLanguage(request));
+  const auth = await requireRouteUser(request);
   if ("error" in auth) return auth.error;
 
   try {
-    const payload = tradePayloadSchema.parse(await request.json());
+    const payload = createTradePayloadSchema(t).parse(await request.json());
     const tradesTable = auth.supabase.from("trades") as any;
     const { data, error } = await tradesTable
       .insert(mapPayloadToInsert(payload, auth.user.id))
@@ -32,7 +34,7 @@ export async function POST(request: Request) {
       .single();
 
     if (error || !data) {
-      return NextResponse.json({ error: "No se pudo crear el trade." }, { status: 400 });
+      return NextResponse.json({ error: t("api.createTradeError") }, { status: 400 });
     }
 
     revalidateTradingPaths(data.id);
@@ -41,13 +43,13 @@ export async function POST(request: Request) {
     if (error instanceof ZodError) {
       return NextResponse.json(
         {
-          error: "Revisa los campos del formulario.",
+          error: t("api.reviewForm"),
           fieldErrors: error.flatten().fieldErrors,
         },
         { status: 422 },
       );
     }
 
-    return NextResponse.json({ error: "Error inesperado al crear el trade." }, { status: 500 });
+    return NextResponse.json({ error: t("api.createUnexpected") }, { status: 500 });
   }
 }

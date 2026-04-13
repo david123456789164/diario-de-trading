@@ -3,11 +3,13 @@ import { NextResponse } from "next/server";
 import { requireRouteUser } from "@/lib/auth/route-user";
 import { buildTradesCsv } from "@/lib/trading/csv";
 import { filterTrades, parseTradeFilters } from "@/lib/trading/filters";
+import { getRequestLanguage, getTranslationForLanguage } from "@/src/i18n/server";
 
 export const preferredRegion = "fra1";
 
 export async function GET(request: Request) {
-  const auth = await requireRouteUser();
+  const { t, locale } = getTranslationForLanguage(getRequestLanguage(request));
+  const auth = await requireRouteUser(request);
   if ("error" in auth) return auth.error;
 
   const url = new URL(request.url);
@@ -20,10 +22,10 @@ export async function GET(request: Request) {
     .order("created_at", { ascending: false });
 
   if (error || !data) {
-    return NextResponse.json({ error: "No se pudieron exportar los trades." }, { status: 400 });
+    return NextResponse.json({ error: t("api.exportError") }, { status: 400 });
   }
 
-  const csv = buildTradesCsv(filterTrades(data, filters));
+  const csv = buildTradesCsv(filterTrades(data, filters), t, locale);
 
   return new NextResponse(csv, {
     status: 200,

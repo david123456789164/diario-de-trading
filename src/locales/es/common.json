@@ -1,0 +1,443 @@
+{
+  "metadata": {
+    "title": "Diario de Trading Swing",
+    "description": "App privada para registrar trades, medir rendimiento y aprender de cada operación."
+  },
+  "settings": {
+    "eyebrow": "Configuración",
+    "title": "Ajustes y utilidades",
+    "description": "Información básica de tu cuenta, carga de datos demo y recordatorios de seguridad.",
+    "accountTitle": "Cuenta",
+    "accountDescription": "Perfil básico asociado al usuario autenticado en Supabase.",
+    "email": "Email",
+    "loadedTrades": "Trades cargados",
+    "preferredCurrency": "Moneda preferida",
+    "profileCreated": "Perfil creado",
+    "demoTitle": "Datos de ejemplo",
+    "demoDescription": "Si quieres ver el dashboard lleno sin cargar trades manualmente, puedes insertar un set demo seguro para tu usuario.",
+    "demoButton": "Cargar datos demo",
+    "demoNote": "La carga demo usa una función SQL que inserta datos solo para el usuario autenticado. No toca datos de otros usuarios.",
+    "securityTitle": "Notas de seguridad",
+    "securityItems": [
+      "La app usa RLS para que cada usuario vea solo sus trades, notas e imágenes.",
+      "En el frontend solo se usa la anon key pública de Supabase.",
+      "La service role key no se usa ni se debe copiar en Vercel como variable pública."
+    ],
+    "toasts": {
+      "demoError": "No se pudieron cargar datos demo.",
+      "demoSuccess": "Se cargaron {{count}} trades demo."
+    }
+  },
+  "notFound": {
+    "title": "No encontramos lo que buscabas",
+    "description": "La operación o página que intentaste abrir no existe o ya no está disponible.",
+    "action": "Volver al dashboard"
+  },
+  "validation": {
+    "validNumber": "Ingresa un número válido.",
+    "positive": "Debe ser mayor a 0.",
+    "textTooLong": "El texto es demasiado largo.",
+    "requiredDate": "La fecha es obligatoria.",
+    "validDate": "Ingresa una fecha válida.",
+    "tickerRequired": "El ticker es obligatorio.",
+    "tickerTooLong": "El ticker es demasiado largo.",
+    "setupRequired": "El setup es obligatorio.",
+    "setupTooLong": "El setup es demasiado largo.",
+    "entryPricePositive": "El precio de entrada debe ser mayor a 0.",
+    "quantityPositive": "La cantidad debe ser mayor a 0.",
+    "notNegative": "No puede ser negativo.",
+    "maxTags": "Puedes guardar hasta 12 etiquetas.",
+    "closedNeedsExitDate": "Si el trade está cerrado, la fecha de salida es obligatoria.",
+    "closedNeedsExitPrice": "Si el trade está cerrado, el precio de salida es obligatorio.",
+    "exitDateNeedsPrice": "Si completas la fecha de salida, también debes indicar el precio de salida.",
+    "exitPriceNeedsDate": "Si completas el precio de salida, también debes indicar la fecha de salida.",
+    "exitBeforeEntry": "La fecha de salida no puede ser anterior a la fecha de entrada.",
+    "longStop": "En un long, el stop loss debe quedar por debajo del precio de entrada.",
+    "longTakeProfit": "En un long, el take profit debe quedar por encima del precio de entrada.",
+    "shortStop": "En un short, el stop loss debe quedar por encima del precio de entrada.",
+    "shortTakeProfit": "En un short, el take profit debe quedar por debajo del precio de entrada."
+  },
+  "api": {
+    "unauthorized": "No autorizado. Inicia sesión para continuar.",
+    "createTradeError": "No se pudo crear el trade.",
+    "updateTradeError": "No se pudo actualizar el trade.",
+    "deleteTradeError": "No se pudo eliminar el trade.",
+    "tradeNotFound": "Trade no encontrado.",
+    "reviewForm": "Revisa los campos del formulario.",
+    "createUnexpected": "Error inesperado al crear el trade.",
+    "updateUnexpected": "Error inesperado al actualizar el trade.",
+    "noFile": "No se recibió ningún archivo.",
+    "invalidFileFormat": "Formato no permitido. Usa PNG, JPG o WEBP.",
+    "fileTooLarge": "La imagen supera el máximo de 5 MB.",
+    "uploadImageError": "No se pudo subir la imagen.",
+    "linkImageError": "La imagen se subió, pero no se pudo vincular al trade.",
+    "deleteImageError": "No se pudo eliminar la imagen.",
+    "seedDemoError": "No se pudieron insertar los datos demo.",
+    "exportError": "No se pudieron exportar los trades."
+  },
+  "csv": {
+    "headers": {
+      "ticker": "Ticker",
+      "asset": "Activo",
+      "direction": "Dirección",
+      "setup": "Setup",
+      "status": "Estado",
+      "entryDate": "Fecha entrada",
+      "exitDate": "Fecha salida",
+      "entryPrice": "Precio entrada",
+      "exitPrice": "Precio salida",
+      "quantity": "Cantidad",
+      "fees": "Fees",
+      "grossPnl": "P&L bruto",
+      "netPnl": "P&L neto",
+      "pnlPercent": "P&L %",
+      "totalRisk": "Riesgo total",
+      "potentialReward": "Reward potencial",
+      "plannedRr": "RR planeado",
+      "realizedR": "R realizado",
+      "holdingDays": "Holding days",
+      "tags": "Etiquetas"
+    }
+  },
+  "trades": {
+    "list": {
+      "eyebrow": "Registro",
+      "title": "Trades",
+      "description": "Lista completa de operaciones con búsqueda, filtros, orden y acceso al detalle.",
+      "emptyTitle": "No encontramos trades con esos filtros",
+      "emptyDescription": "Ajusta la búsqueda o limpia los filtros para volver a ver todas tus operaciones.",
+      "emptyAction": "Crear primer trade"
+    },
+    "new": {
+      "eyebrow": "Nuevo registro",
+      "title": "Crear trade",
+      "description": "Carga todos los datos relevantes de la operación para medir rendimiento, disciplina y calidad de ejecución."
+    },
+    "edit": {
+      "eyebrow": "Edición",
+      "title": "Editar {{ticker}}",
+      "description": "Actualiza datos, notas, errores o screenshot sin perder el historial de creación."
+    },
+    "detailPage": {
+      "eyebrow": "Detalle del trade",
+      "description": "Revisión completa de datos, métricas, screenshot y aprendizaje registrado para esta operación.",
+      "editAction": "Editar trade"
+    },
+    "filters": {
+      "searchPlaceholder": "Buscar por ticker, setup, nota o tag...",
+      "allSetups": "Todos los setups",
+      "allStatuses": "Todos los estados",
+      "allDirections": "Long y short",
+      "sortPrefix": "Ordenar por: {{label}}",
+      "desc": "Descendente",
+      "asc": "Ascendente"
+    },
+    "table": {
+      "pageOf": "Página {{page}} de {{totalPages}}",
+      "deleteTitle": "Eliminar trade",
+      "deleteDescription": "Se borrará {{ticker}} y su screenshot asociado si existe. Esta acción no se puede deshacer.",
+      "deleteFallback": "este trade",
+      "deleteConfirm": "Sí, eliminar",
+      "deleteError": "No se pudo eliminar el trade.",
+      "deleteSuccess": "Trade eliminado correctamente."
+    },
+    "form": {
+      "labels": {
+        "ticker": "Ticker",
+        "assetType": "Tipo de activo",
+        "direction": "Dirección",
+        "status": "Estado",
+        "setup": "Setup / estrategia",
+        "entryDate": "Fecha de entrada",
+        "exitDate": "Fecha de salida",
+        "quantity": "Cantidad de shares",
+        "entryPrice": "Precio de entrada",
+        "exitPrice": "Precio de salida",
+        "initialStopLoss": "Stop loss inicial",
+        "initialTakeProfit": "Take profit inicial",
+        "fees": "Fees / comisiones",
+        "accountSize": "Tamaño de cuenta",
+        "plannedRiskAmount": "Riesgo planeado en USD",
+        "tags": "Etiquetas",
+        "thesis": "Tesis de entrada",
+        "notes": "Notas",
+        "mistakes": "Errores cometidos",
+        "lessonLearned": "Aprendizaje / lesson learned"
+      },
+      "placeholders": {
+        "ticker": "AAPL",
+        "setup": "Pullback EMA 21",
+        "tags": "swing, ruptura, volumen",
+        "thesis": "¿Qué viste y por qué tomaste la operación?",
+        "notes": "Contexto adicional, manejo, salidas parciales, etc.",
+        "mistakes": "¿Qué salió mal o se ejecutó mal?",
+        "lessonLearned": "¿Qué cambiarías o repetirías en el próximo trade?"
+      },
+      "hints": {
+        "exitDateOpen": "Déjala vacía si la operación sigue abierta.",
+        "longStop": "Para long debe quedar por debajo de la entrada.",
+        "shortStop": "Para short debe quedar por encima de la entrada.",
+        "longTakeProfit": "Para long debe quedar por encima de la entrada.",
+        "shortTakeProfit": "Para short debe quedar por debajo de la entrada.",
+        "tags": "Sepáralas con coma. Ejemplo: earnings, gap, trend"
+      },
+      "screenshot": {
+        "title": "Screenshot del trade",
+        "description": "Opcional. Se guarda en Supabase Storage dentro de tu espacio privado.",
+        "alt": "Screenshot del trade",
+        "choose": "Haz clic para elegir una imagen",
+        "requirements": "PNG, JPG o WEBP. Máximo 5 MB.",
+        "keep": "Conservar imagen",
+        "removeCurrent": "Quitar imagen actual",
+        "removeFile": "Quitar archivo"
+      },
+      "toasts": {
+        "invalidImageType": "Solo se permiten imágenes PNG, JPG o WEBP.",
+        "imageTooLarge": "La imagen debe pesar menos de 5 MB.",
+        "imageUploadError": "El trade se guardó, pero la imagen no se pudo subir.",
+        "imageDeleteError": "No se pudo eliminar la imagen actual.",
+        "saveError": "No se pudo guardar el trade.",
+        "created": "Trade creado correctamente.",
+        "updated": "Trade actualizado correctamente."
+      }
+    },
+    "detail": {
+      "setup": "Setup",
+      "realizedNetPnl": "P&L neto realizado",
+      "grossPnl": "P&L bruto",
+      "pnlPercent": "P&L %",
+      "realizedR": "R realizado",
+      "holdingDays": "Holding days",
+      "totalRisk": "Riesgo total",
+      "potentialReward": "Reward potencial",
+      "plannedRr": "RR planeado",
+      "fees": "Fees",
+      "entryDate": "Fecha de entrada",
+      "exitDate": "Fecha de salida",
+      "quantity": "Cantidad",
+      "entryPrice": "Precio de entrada",
+      "exitPrice": "Precio de salida",
+      "accountSize": "Tamaño de cuenta",
+      "asset": "Activo",
+      "initialStopLoss": "Stop loss inicial",
+      "initialTakeProfit": "Take profit inicial",
+      "plannedRisk": "Riesgo planeado",
+      "created": "Creado",
+      "updated": "Actualizado",
+      "thesis": "Tesis de entrada",
+      "notes": "Notas",
+      "mistakes": "Errores cometidos",
+      "lessonLearned": "Aprendizaje",
+      "screenshotTitle": "Screenshot",
+      "screenshotDescription": "Captura asociada al trade para revisar contexto y ejecución.",
+      "screenshotAlt": "Screenshot del trade {{ticker}}",
+      "noScreenshot": "No hay screenshot cargado."
+    },
+    "assetType": {
+      "stock": "Acción",
+      "etf": "ETF"
+    },
+    "direction": {
+      "long": "Long",
+      "short": "Short"
+    },
+    "status": {
+      "open": "Abierto",
+      "closed": "Cerrado",
+      "cancelled": "Cancelado",
+      "invalidated": "Invalidado"
+    },
+    "outcome": {
+      "winner": "Ganador",
+      "loser": "Perdedor",
+      "breakeven": "Break-even",
+      "pending": "Pendiente"
+    },
+    "resultFilter": {
+      "all": "Todos",
+      "winner": "Ganador",
+      "loser": "Perdedor",
+      "breakeven": "Break-even"
+    },
+    "sort": {
+      "entry_date": "Fecha de entrada",
+      "exit_date": "Fecha de salida",
+      "created_at": "Fecha de creación",
+      "ticker": "Ticker",
+      "net_pnl": "P&L neto",
+      "realized_r": "R realizado",
+      "holding_days": "Holding days"
+    }
+  },
+  "language": {
+    "label": "Idioma",
+    "es": "Español",
+    "he": "Hebreo"
+  },
+  "common": {
+    "actions": {
+      "apply": "Aplicar",
+      "back": "Volver",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar",
+      "delete": "Eliminar",
+      "edit": "Editar",
+      "saveChanges": "Guardar cambios",
+      "createTrade": "Crear trade",
+      "newTrade": "Nuevo trade",
+      "clear": "Limpiar",
+      "exportCsv": "Exportar CSV",
+      "previous": "Anterior",
+      "next": "Siguiente"
+    },
+    "states": {
+      "loadingData": "Cargando datos...",
+      "saving": "Guardando...",
+      "deleting": "Eliminando...",
+      "noContent": "Sin contenido.",
+      "authenticatedUser": "Usuario autenticado"
+    },
+    "units": {
+      "days": "días"
+    },
+    "metrics": {
+      "ticker": "Ticker",
+      "status": "Estado",
+      "setup": "Setup",
+      "entry": "Entrada",
+      "exit": "Salida",
+      "netPnl": "P&L neto",
+      "pnlPercent": "P&L %",
+      "r": "R",
+      "holding": "Holding",
+      "actions": "Acciones"
+    }
+  },
+  "nav": {
+    "dashboard": "Panel",
+    "trades": "Operaciones",
+    "analytics": "Analíticas",
+    "settings": "Ajustes"
+  },
+  "layout": {
+    "brand": "Swing Journal",
+    "title": "Diario de trading",
+    "subtitle": "Registra, analiza y mejora tu ejecución swing.",
+    "focusTitle": "Enfoque profesional",
+    "focusDescription": "Los gráficos usan solo datos reales cerrados para mantener métricas limpias y consistentes.",
+    "signOut": "Salir",
+    "signingOut": "Saliendo...",
+    "signOutError": "No se pudo cerrar sesión."
+  },
+  "login": {
+    "eyebrow": "Dashboard privado",
+    "heroTitle": "Un diario de trading serio para medir tu proceso, no solo el resultado.",
+    "heroDescription": "Guarda entradas, salidas, riesgo, screenshots y aprendizajes. Después conviértelos en métricas claras para detectar qué setups realmente funcionan en swing trading.",
+    "accessBadge": "Acceso privado",
+    "title": "Diario de trading swing",
+    "description": "Registra operaciones, evalúa setups y convierte tu historial en decisiones mejores.",
+    "magicTab": "Enlace mágico",
+    "passwordTab": "Email + contraseña",
+    "emailLabel": "Email",
+    "emailPlaceholder": "tu@email.com",
+    "passwordLabel": "Contraseña",
+    "passwordPlaceholder": "Mínimo 6 caracteres",
+    "magicHint": "Recibirás un enlace seguro para entrar sin contraseña.",
+    "passwordHint": "Si la cuenta no existe, se creará con este email y contraseña.",
+    "sendMagicLink": "Enviar enlace mágico",
+    "submitPassword": "Entrar o crear cuenta",
+    "validation": {
+      "email": "Ingresa un email válido.",
+      "passwordMin": "La contraseña debe tener al menos 6 caracteres."
+    },
+    "toasts": {
+      "magicError": "No se pudo enviar el enlace mágico.",
+      "magicSuccess": "Revisa tu correo. Te enviamos un enlace para entrar.",
+      "authError": "No se pudo iniciar sesión ni crear la cuenta.",
+      "sessionSuccess": "Sesión iniciada correctamente.",
+      "signupSuccess": "Cuenta creada. Revisa tu email para confirmar el acceso."
+    }
+  },
+  "dashboard": {
+    "eyebrow": "Visión general",
+    "title": "Dashboard de rendimiento",
+    "description": "Todo tu diario de swing trading resumido en métricas prácticas para mejorar proceso, riesgo y ejecución.",
+    "emptyTitle": "Todavía no registraste trades",
+    "emptyDescription": "Empieza con tu primera operación para activar el dashboard, las estadísticas y el análisis histórico.",
+    "emptyAction": "Crear primer trade",
+    "stats": {
+      "totalNetPnl": "P&L neto acumulado",
+      "winRate": "Win rate",
+      "winRateHint": "{{wins}} ganadores / {{losses}} perdedores",
+      "profitFactor": "Profit factor",
+      "profitFactorHint": "Usa P&L neto de trades cerrados",
+      "expectancy": "Expectancy",
+      "expectancyHint": "Expectativa promedio por trade cerrado",
+      "averageWinner": "Average winner",
+      "averageLoser": "Average loser",
+      "averageR": "R promedio",
+      "maxDrawdown": "Max drawdown",
+      "closedTrades": "Trades cerrados",
+      "openTrades": "Trades abiertos",
+      "averageHolding": "Holding promedio",
+      "averageHoldingHint": "Días promedio en trades cerrados",
+      "longShortRatio": "Ratio long vs short",
+      "longShortRatioHint": "Participación long / short",
+      "bestTrade": "Mejor trade",
+      "worstTrade": "Peor trade"
+    },
+    "charts": {
+      "tickerTitle": "Rendimiento por ticker",
+      "tickerDescription": "Los instrumentos que más suman o restan a tu curva.",
+      "setupTitle": "Rendimiento por setup",
+      "setupDescription": "Qué estrategias te están dando edge real."
+    }
+  },
+  "analytics": {
+    "eyebrow": "Análisis",
+    "title": "Analytics de swing trading",
+    "description": "Lectura más profunda de riesgo, edge y consistencia usando solo datos cerrados y fórmulas robustas.",
+    "emptyTitle": "Aún no hay trades cerrados",
+    "emptyDescription": "Cierra algunas operaciones para desbloquear distribución de R, curvas y comparativas.",
+    "emptyAction": "Crear trade",
+    "stats": {
+      "totalWon": "Total ganado",
+      "totalLost": "Total perdido",
+      "winningTradesPercent": "% trades ganadores",
+      "averageHolding": "Holding promedio"
+    },
+    "charts": {
+      "tickerTitle": "Resultados por ticker",
+      "tickerDescription": "Comparativa de instrumentos más rentables.",
+      "setupTitle": "Resultados por setup",
+      "setupDescription": "Comparativa de setups para ver dónde está tu edge.",
+      "longShortTitle": "Longs vs shorts",
+      "longShortDescription": "Comparación simple del rendimiento por dirección."
+    }
+  },
+  "charts": {
+    "equityCurve": {
+      "title": "Equity curve",
+      "description": "Muestra la evolución acumulada del P&L neto de trades cerrados.",
+      "empty": "Aún no hay trades cerrados para dibujar la curva."
+    },
+    "monthlyPnl": {
+      "title": "P&L mensual",
+      "description": "Te ayuda a detectar meses fuertes, meses débiles y consistencia.",
+      "empty": "Todavía no hay suficiente historial mensual."
+    },
+    "performance": {
+      "empty": "No hay datos suficientes para este gráfico."
+    },
+    "rDistribution": {
+      "title": "Distribución de R",
+      "description": "Mide si tus ganancias son suficientemente grandes frente a tus pérdidas.",
+      "empty": "La distribución aparecerá cuando cierres trades con riesgo definido."
+    },
+    "winRateTrend": {
+      "title": "Evolución del win rate",
+      "description": "Permite ver si la calidad de ejecución mejora o empeora a lo largo del tiempo.",
+      "empty": "Aún no hay meses suficientes para mostrar evolución."
+    }
+  }
+}

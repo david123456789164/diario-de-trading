@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ImagePlus, Loader2, Save, Trash2, UploadCloud } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -13,8 +14,8 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { assetTypeOptions, directionOptions, tradeStatusOptions } from "@/lib/trading/constants";
 import {
+  createTradePayloadSchema,
   normalizeTagList,
-  tradePayloadSchema,
   type TradePayload,
   type TradeFormValues,
 } from "@/lib/trading/schemas";
@@ -53,6 +54,8 @@ export function TradeForm({
   tradeId?: string;
   initialValues?: TradeFormInitialValues;
 }) {
+  const { t, i18n } = useTranslation();
+  const tradePayloadSchema = useMemo(() => createTradePayloadSchema(t), [t]);
   const defaultValues = useMemo<TradeFormValues>(
     () => ({
       ticker: initialValues?.ticker ?? "",
@@ -101,12 +104,12 @@ export function TradeForm({
 
     const validTypes = ["image/png", "image/jpeg", "image/webp"];
     if (!validTypes.includes(file.type)) {
-      toast.error("Solo se permiten imágenes PNG, JPG o WEBP.");
+      toast.error(t("trades.form.toasts.invalidImageType"));
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("La imagen debe pesar menos de 5 MB.");
+      toast.error(t("trades.form.toasts.imageTooLarge"));
       return;
     }
 
@@ -122,12 +125,15 @@ export function TradeForm({
 
     const response = await fetch(`/api/trades/${id}/screenshot`, {
       method: "POST",
+      headers: {
+        "X-App-Language": i18n.language,
+      },
       body: formData,
     });
 
     if (!response.ok) {
       const data = (await response.json().catch(() => null)) as { error?: string } | null;
-      toast.error(data?.error ?? "El trade se guardó, pero la imagen no se pudo subir.");
+      toast.error(data?.error ?? t("trades.form.toasts.imageUploadError"));
       return false;
     }
 
@@ -137,11 +143,14 @@ export function TradeForm({
   async function deleteExistingImage(id: string) {
     const response = await fetch(`/api/trades/${id}/screenshot`, {
       method: "DELETE",
+      headers: {
+        "X-App-Language": i18n.language,
+      },
     });
 
     if (!response.ok) {
       const data = (await response.json().catch(() => null)) as { error?: string } | null;
-      toast.error(data?.error ?? "No se pudo eliminar la imagen actual.");
+      toast.error(data?.error ?? t("trades.form.toasts.imageDeleteError"));
       return false;
     }
 
@@ -162,6 +171,7 @@ export function TradeForm({
       method: mode === "create" ? "POST" : "PUT",
       headers: {
         "Content-Type": "application/json",
+        "X-App-Language": i18n.language,
       },
       body: JSON.stringify(payload),
     });
@@ -176,7 +186,7 @@ export function TradeForm({
 
     if (!response.ok || !data?.trade) {
       setSubmitting(false);
-      toast.error(data?.error ?? "No se pudo guardar el trade.");
+      toast.error(data?.error ?? t("trades.form.toasts.saveError"));
       return;
     }
 
@@ -190,102 +200,102 @@ export function TradeForm({
       await uploadImage(id);
     }
 
-    toast.success(mode === "create" ? "Trade creado correctamente." : "Trade actualizado correctamente.");
+    toast.success(mode === "create" ? t("trades.form.toasts.created") : t("trades.form.toasts.updated"));
     window.location.href = `/trades/${id}`;
   }
 
   return (
     <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
       <Card className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <Field label="Ticker" error={form.formState.errors.ticker?.message}>
-          <Input placeholder="AAPL" {...form.register("ticker")} />
+        <Field label={t("trades.form.labels.ticker")} error={form.formState.errors.ticker?.message}>
+          <Input placeholder={t("trades.form.placeholders.ticker")} {...form.register("ticker")} />
         </Field>
 
-        <Field label="Tipo de activo" error={form.formState.errors.assetType?.message}>
+        <Field label={t("trades.form.labels.assetType")} error={form.formState.errors.assetType?.message}>
           <Select {...form.register("assetType")}>
             {assetTypeOptions.map((option) => (
               <option key={option.value} value={option.value}>
-                {option.label}
+                {t(option.labelKey)}
               </option>
             ))}
           </Select>
         </Field>
 
-        <Field label="Dirección" error={form.formState.errors.direction?.message}>
+        <Field label={t("trades.form.labels.direction")} error={form.formState.errors.direction?.message}>
           <Select {...form.register("direction")}>
             {directionOptions.map((option) => (
               <option key={option.value} value={option.value}>
-                {option.label}
+                {t(option.labelKey)}
               </option>
             ))}
           </Select>
         </Field>
 
-        <Field label="Estado" error={form.formState.errors.status?.message}>
+        <Field label={t("trades.form.labels.status")} error={form.formState.errors.status?.message}>
           <Select {...form.register("status")}>
             {tradeStatusOptions.map((option) => (
               <option key={option.value} value={option.value}>
-                {option.label}
+                {t(option.labelKey)}
               </option>
             ))}
           </Select>
         </Field>
 
-        <Field label="Setup / estrategia" error={form.formState.errors.setup?.message}>
-          <Input placeholder="Pullback EMA 21" {...form.register("setup")} />
+        <Field label={t("trades.form.labels.setup")} error={form.formState.errors.setup?.message}>
+          <Input placeholder={t("trades.form.placeholders.setup")} {...form.register("setup")} />
         </Field>
 
-        <Field label="Fecha de entrada" error={form.formState.errors.entryDate?.message}>
+        <Field label={t("trades.form.labels.entryDate")} error={form.formState.errors.entryDate?.message}>
           <Input type="date" {...form.register("entryDate")} />
         </Field>
 
-        <Field label="Fecha de salida" error={form.formState.errors.exitDate?.message} hint={watchedStatus === "open" ? "Déjala vacía si la operación sigue abierta." : undefined}>
+        <Field label={t("trades.form.labels.exitDate")} error={form.formState.errors.exitDate?.message} hint={watchedStatus === "open" ? t("trades.form.hints.exitDateOpen") : undefined}>
           <Input type="date" {...form.register("exitDate")} />
         </Field>
 
-        <Field label="Cantidad de shares" error={form.formState.errors.quantity?.message}>
+        <Field label={t("trades.form.labels.quantity")} error={form.formState.errors.quantity?.message}>
           <Input type="number" min="0" step="1" {...form.register("quantity")} />
         </Field>
       </Card>
 
       <Card className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <Field label="Precio de entrada" error={form.formState.errors.entryPrice?.message}>
+        <Field label={t("trades.form.labels.entryPrice")} error={form.formState.errors.entryPrice?.message}>
           <Input type="number" min="0" step="0.0001" {...form.register("entryPrice")} />
         </Field>
 
-        <Field label="Precio de salida" error={form.formState.errors.exitPrice?.message}>
+        <Field label={t("trades.form.labels.exitPrice")} error={form.formState.errors.exitPrice?.message}>
           <Input type="number" min="0" step="0.0001" {...form.register("exitPrice")} />
         </Field>
 
         <Field
-          label="Stop loss inicial"
+          label={t("trades.form.labels.initialStopLoss")}
           error={form.formState.errors.initialStopLoss?.message}
-          hint={watchedDirection === "long" ? "Para long debe quedar por debajo de la entrada." : "Para short debe quedar por encima de la entrada."}
+          hint={watchedDirection === "long" ? t("trades.form.hints.longStop") : t("trades.form.hints.shortStop")}
         >
           <Input type="number" min="0" step="0.0001" {...form.register("initialStopLoss")} />
         </Field>
 
         <Field
-          label="Take profit inicial"
+          label={t("trades.form.labels.initialTakeProfit")}
           error={form.formState.errors.initialTakeProfit?.message}
-          hint={watchedDirection === "long" ? "Para long debe quedar por encima de la entrada." : "Para short debe quedar por debajo de la entrada."}
+          hint={watchedDirection === "long" ? t("trades.form.hints.longTakeProfit") : t("trades.form.hints.shortTakeProfit")}
         >
           <Input type="number" min="0" step="0.0001" {...form.register("initialTakeProfit")} />
         </Field>
 
-        <Field label="Fees / comisiones" error={form.formState.errors.fees?.message}>
+        <Field label={t("trades.form.labels.fees")} error={form.formState.errors.fees?.message}>
           <Input type="number" min="0" step="0.01" {...form.register("fees")} />
         </Field>
 
-        <Field label="Tamaño de cuenta" error={form.formState.errors.accountSize?.message}>
+        <Field label={t("trades.form.labels.accountSize")} error={form.formState.errors.accountSize?.message}>
           <Input type="number" min="0" step="0.01" {...form.register("accountSize")} />
         </Field>
 
-        <Field label="Riesgo planeado en USD" error={form.formState.errors.plannedRiskAmount?.message}>
+        <Field label={t("trades.form.labels.plannedRiskAmount")} error={form.formState.errors.plannedRiskAmount?.message}>
           <Input type="number" min="0" step="0.01" {...form.register("plannedRiskAmount")} />
         </Field>
 
-        <Field label="Etiquetas" hint="Sepáralas con coma. Ejemplo: earnings, gap, trend">
+        <Field label={t("trades.form.labels.tags")} hint={t("trades.form.hints.tags")}>
           <Input
             value={tagsText}
             onChange={(event) => {
@@ -293,42 +303,42 @@ export function TradeForm({
               setTagsText(value);
               form.setValue("tags", normalizeTagList(value), { shouldValidate: true });
             }}
-            placeholder="swing, ruptura, volumen"
+            placeholder={t("trades.form.placeholders.tags")}
           />
         </Field>
       </Card>
 
       <div className="grid gap-6 xl:grid-cols-2">
         <Card className="space-y-4">
-          <Field label="Tesis de entrada" error={form.formState.errors.thesis?.message}>
-            <Textarea placeholder="¿Qué viste y por qué tomaste la operación?" {...form.register("thesis")} />
+          <Field label={t("trades.form.labels.thesis")} error={form.formState.errors.thesis?.message}>
+            <Textarea placeholder={t("trades.form.placeholders.thesis")} {...form.register("thesis")} />
           </Field>
 
-          <Field label="Notas" error={form.formState.errors.notes?.message}>
-            <Textarea placeholder="Contexto adicional, manejo, salidas parciales, etc." {...form.register("notes")} />
+          <Field label={t("trades.form.labels.notes")} error={form.formState.errors.notes?.message}>
+            <Textarea placeholder={t("trades.form.placeholders.notes")} {...form.register("notes")} />
           </Field>
         </Card>
 
         <Card className="space-y-4">
-          <Field label="Errores cometidos" error={form.formState.errors.mistakes?.message}>
-            <Textarea placeholder="¿Qué salió mal o se ejecutó mal?" {...form.register("mistakes")} />
+          <Field label={t("trades.form.labels.mistakes")} error={form.formState.errors.mistakes?.message}>
+            <Textarea placeholder={t("trades.form.placeholders.mistakes")} {...form.register("mistakes")} />
           </Field>
 
-          <Field label="Aprendizaje / lesson learned" error={form.formState.errors.lessonLearned?.message}>
-            <Textarea placeholder="¿Qué cambiarías o repetirías en el próximo trade?" {...form.register("lessonLearned")} />
+          <Field label={t("trades.form.labels.lessonLearned")} error={form.formState.errors.lessonLearned?.message}>
+            <Textarea placeholder={t("trades.form.placeholders.lessonLearned")} {...form.register("lessonLearned")} />
           </Field>
         </Card>
       </div>
 
       <Card className="space-y-4">
         <div className="space-y-1">
-          <h3 className="text-lg font-semibold text-text">Screenshot del trade</h3>
-          <p className="text-sm text-muted">Opcional. Se guarda en Supabase Storage dentro de tu espacio privado.</p>
+          <h3 className="text-lg font-semibold text-text">{t("trades.form.screenshot.title")}</h3>
+          <p className="text-sm text-muted">{t("trades.form.screenshot.description")}</p>
         </div>
 
         {existingImageUrl && !removeCurrentImage ? (
           <div className="overflow-hidden rounded-3xl border border-stroke">
-            <img src={existingImageUrl} alt="Screenshot del trade" className="max-h-[360px] w-full object-cover" />
+            <img src={existingImageUrl} alt={t("trades.form.screenshot.alt")} className="max-h-[360px] w-full object-cover" />
           </div>
         ) : null}
 
@@ -337,9 +347,9 @@ export function TradeForm({
             <UploadCloud className="h-7 w-7 text-accent" />
             <div className="space-y-1">
               <p className="text-sm font-medium text-text">
-                {selectedImage ? selectedImage.name : "Haz clic para elegir una imagen"}
+                {selectedImage ? selectedImage.name : t("trades.form.screenshot.choose")}
               </p>
-              <p className="text-xs text-muted">PNG, JPG o WEBP. Máximo 5 MB.</p>
+              <p className="text-xs text-muted">{t("trades.form.screenshot.requirements")}</p>
             </div>
             <input
               type="file"
@@ -359,14 +369,14 @@ export function TradeForm({
                 }}
               >
                 <Trash2 className="h-4 w-4" />
-                {removeCurrentImage ? "Conservar imagen" : "Quitar imagen actual"}
+                {removeCurrentImage ? t("trades.form.screenshot.keep") : t("trades.form.screenshot.removeCurrent")}
               </Button>
             ) : null}
 
             {selectedImage ? (
               <Button variant="secondary" onClick={() => setSelectedImage(null)}>
                 <ImagePlus className="h-4 w-4" />
-                Quitar archivo
+                {t("trades.form.screenshot.removeFile")}
               </Button>
             ) : null}
           </div>
@@ -375,11 +385,11 @@ export function TradeForm({
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
         <Button variant="secondary" onClick={() => window.history.back()} disabled={submitting}>
-          Cancelar
+          {t("common.actions.cancel")}
         </Button>
         <Button type="submit" disabled={submitting}>
           {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-          {submitting ? "Guardando..." : mode === "create" ? "Crear trade" : "Guardar cambios"}
+          {submitting ? t("common.states.saving") : mode === "create" ? t("common.actions.createTrade") : t("common.actions.saveChanges")}
         </Button>
       </div>
     </form>

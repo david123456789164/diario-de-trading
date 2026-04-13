@@ -4,6 +4,7 @@ import { Eye, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +13,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Card } from "@/components/ui/card";
 import type { ComputedTrade } from "@/lib/trading/calculations";
 import { formatCurrency, formatDate, formatHoldingDays, formatPercent, formatRatio } from "@/lib/utils/format";
+import { getLanguageLocale } from "@/src/i18n/settings";
 
 function statusTone(status: string) {
   switch (status) {
@@ -55,6 +57,8 @@ export function TradesTable({
   const searchParams = useSearchParams();
   const [tradeToDelete, setTradeToDelete] = useState<ComputedTrade | null>(null);
   const [loading, setLoading] = useState(false);
+  const { t, i18n } = useTranslation();
+  const locale = getLanguageLocale(i18n.language);
 
   const pagination = useMemo(() => {
     const createPageUrl = (nextPage: number) => {
@@ -75,17 +79,20 @@ export function TradesTable({
 
     const response = await fetch(`/api/trades/${tradeToDelete.id}`, {
       method: "DELETE",
+      headers: {
+        "X-App-Language": i18n.language,
+      },
     });
 
     setLoading(false);
 
     if (!response.ok) {
       const data = (await response.json().catch(() => null)) as { error?: string } | null;
-      toast.error(data?.error ?? "No se pudo eliminar el trade.");
+      toast.error(data?.error ?? t("trades.table.deleteError"));
       return;
     }
 
-    toast.success("Trade eliminado correctamente.");
+    toast.success(t("trades.table.deleteSuccess"));
     setTradeToDelete(null);
     router.refresh();
   }
@@ -96,17 +103,17 @@ export function TradesTable({
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-stroke text-sm">
             <thead className="bg-background/40">
-              <tr className="text-left text-muted">
-                <th className="px-4 py-4 font-medium">Ticker</th>
-                <th className="px-4 py-4 font-medium">Estado</th>
-                <th className="px-4 py-4 font-medium">Setup</th>
-                <th className="px-4 py-4 font-medium">Entrada</th>
-                <th className="px-4 py-4 font-medium">Salida</th>
-                <th className="px-4 py-4 font-medium">P&amp;L neto</th>
-                <th className="px-4 py-4 font-medium">P&amp;L %</th>
-                <th className="px-4 py-4 font-medium">R</th>
-                <th className="px-4 py-4 font-medium">Holding</th>
-                <th className="px-4 py-4 font-medium text-right">Acciones</th>
+              <tr className="text-start text-muted">
+                <th className="px-4 py-4 font-medium">{t("common.metrics.ticker")}</th>
+                <th className="px-4 py-4 font-medium">{t("common.metrics.status")}</th>
+                <th className="px-4 py-4 font-medium">{t("common.metrics.setup")}</th>
+                <th className="px-4 py-4 font-medium">{t("common.metrics.entry")}</th>
+                <th className="px-4 py-4 font-medium">{t("common.metrics.exit")}</th>
+                <th className="px-4 py-4 font-medium">{t("common.metrics.netPnl")}</th>
+                <th className="px-4 py-4 font-medium">{t("common.metrics.pnlPercent")}</th>
+                <th className="px-4 py-4 font-medium">{t("common.metrics.r")}</th>
+                <th className="px-4 py-4 font-medium">{t("common.metrics.holding")}</th>
+                <th className="px-4 py-4 font-medium text-end">{t("common.metrics.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stroke/70">
@@ -117,34 +124,28 @@ export function TradesTable({
                       <div className="font-semibold text-text">{trade.raw.ticker}</div>
                       <div className="flex items-center gap-2">
                         <Badge tone={trade.raw.direction === "long" ? "positive" : "warning"}>
-                          {trade.raw.direction === "long" ? "Long" : "Short"}
+                          {t(`trades.direction.${trade.raw.direction}`)}
                         </Badge>
                         <Badge tone={outcomeTone(trade.outcome)}>
-                          {trade.outcome === "pending" ? "Pendiente" : trade.outcome}
+                          {t(`trades.outcome.${trade.outcome}`)}
                         </Badge>
                       </div>
                     </div>
                   </td>
                   <td className="px-4 py-4">
                     <Badge tone={statusTone(trade.raw.status)}>
-                      {trade.raw.status === "open"
-                        ? "Abierto"
-                        : trade.raw.status === "closed"
-                          ? "Cerrado"
-                          : trade.raw.status === "cancelled"
-                            ? "Cancelado"
-                            : "Invalidado"}
+                      {t(`trades.status.${trade.raw.status}`)}
                     </Badge>
                   </td>
                   <td className="px-4 py-4 text-muted">{trade.raw.setup}</td>
-                  <td className="px-4 py-4 text-muted">{formatDate(trade.raw.entry_date)}</td>
-                  <td className="px-4 py-4 text-muted">{formatDate(trade.raw.exit_date)}</td>
+                  <td className="px-4 py-4 text-muted">{formatDate(trade.raw.entry_date, "—", locale)}</td>
+                  <td className="px-4 py-4 text-muted">{formatDate(trade.raw.exit_date, "—", locale)}</td>
                   <td className={`px-4 py-4 font-medium ${trade.netPnL && trade.netPnL < 0 ? "text-danger" : "text-text"}`}>
-                    {formatCurrency(trade.netPnL)}
+                    {formatCurrency(trade.netPnL, "USD", locale)}
                   </td>
-                  <td className="px-4 py-4 text-muted">{formatPercent(trade.pnlPercent)}</td>
-                  <td className="px-4 py-4 text-muted">{formatRatio(trade.realizedR)}</td>
-                  <td className="px-4 py-4 text-muted">{formatHoldingDays(trade.holdingDays)}</td>
+                  <td className="px-4 py-4 text-muted">{formatPercent(trade.pnlPercent, 2, locale)}</td>
+                  <td className="px-4 py-4 text-muted">{formatRatio(trade.realizedR, 2, locale)}</td>
+                  <td className="px-4 py-4 text-muted">{formatHoldingDays(trade.holdingDays, locale)}</td>
                   <td className="px-4 py-4">
                     <div className="flex justify-end gap-2">
                       <Link href={`/trades/${trade.id}`}>
@@ -170,17 +171,17 @@ export function TradesTable({
 
         <div className="flex flex-col gap-3 border-t border-stroke/70 px-4 py-4 md:flex-row md:items-center md:justify-between">
           <p className="text-sm text-muted">
-            Página {page} de {totalPages}
+            {t("trades.table.pageOf", { page, totalPages })}
           </p>
           <div className="flex gap-3">
             <Link href={pagination.prev}>
               <Button variant="secondary" size="sm" disabled={page <= 1}>
-                Anterior
+                {t("common.actions.previous")}
               </Button>
             </Link>
             <Link href={pagination.next}>
               <Button variant="secondary" size="sm" disabled={page >= totalPages}>
-                Siguiente
+                {t("common.actions.next")}
               </Button>
             </Link>
           </div>
@@ -189,9 +190,10 @@ export function TradesTable({
 
       <ConfirmDialog
         open={!!tradeToDelete}
-        title="Eliminar trade"
-        description={`Se borrará ${tradeToDelete?.raw.ticker ?? "este trade"} y su screenshot asociado si existe. Esta acción no se puede deshacer.`}
-        confirmLabel="Sí, eliminar"
+        title={t("trades.table.deleteTitle")}
+        description={t("trades.table.deleteDescription", { ticker: tradeToDelete?.raw.ticker ?? t("trades.table.deleteFallback") })}
+        confirmLabel={t("trades.table.deleteConfirm")}
+        cancelLabel={t("common.actions.cancel")}
         onCancel={() => setTradeToDelete(null)}
         onConfirm={confirmDelete}
         loading={loading}
@@ -199,4 +201,3 @@ export function TradesTable({
     </>
   );
 }
-

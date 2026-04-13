@@ -3,18 +3,20 @@
 import { BarChart3, CandlestickChart, LayoutDashboard, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslation } from "react-i18next";
 
 import { cn } from "@/lib/utils/cn";
 
 const navigation = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/trades", label: "Trades", icon: CandlestickChart },
-  { href: "/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/settings", label: "Ajustes", icon: Settings },
+  { href: "/dashboard", labelKey: "nav.dashboard", icon: LayoutDashboard },
+  { href: "/trades", labelKey: "nav.trades", icon: CandlestickChart },
+  { href: "/analytics", labelKey: "nav.analytics", icon: BarChart3 },
+  { href: "/settings", labelKey: "nav.settings", icon: Settings },
 ];
 
 export function MobileNav() {
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   return (
     <nav className="glass-panel flex gap-2 overflow-x-auto p-2 xl:hidden">
@@ -30,11 +32,10 @@ export function MobileNav() {
             )}
           >
             <item.icon className="h-4 w-4" />
-            {item.label}
+            {t(item.labelKey)}
           </Link>
         );
       })}
     </nav>
   );
 }
-

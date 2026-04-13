@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { computeTrade } from "@/lib/trading/calculations";
 import { getSignedScreenshotUrl, getTradeByIdForCurrentUser } from "@/lib/trading/queries";
+import { getServerTranslation } from "@/src/i18n/server";
 
 export default async function TradeDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { t } = await getServerTranslation();
   const { id } = await params;
   const trade = await getTradeByIdForCurrentUser(id);
   const screenshotUrl = await getSignedScreenshotUrl(trade.screenshot_path);
@@ -14,16 +16,16 @@ export default async function TradeDetailPage({ params }: { params: Promise<{ id
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow="Detalle del trade"
+        eyebrow={t("trades.detailPage.eyebrow")}
         title={`${trade.ticker} · ${trade.setup}`}
-        description="Revisión completa de datos, métricas, screenshot y aprendizaje registrado para esta operación."
+        description={t("trades.detailPage.description")}
         actions={
           <div className="flex gap-3">
             <Link href="/trades">
-              <Button variant="secondary">Volver</Button>
+              <Button variant="secondary">{t("common.actions.back")}</Button>
             </Link>
             <Link href={`/trades/${trade.id}/edit`}>
-              <Button>Editar trade</Button>
+              <Button>{t("trades.detailPage.editAction")}</Button>
             </Link>
           </div>
         }
@@ -33,4 +35,3 @@ export default async function TradeDetailPage({ params }: { params: Promise<{ id
     </div>
   );
 }
-

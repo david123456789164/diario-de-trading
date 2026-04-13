@@ -1,0 +1,443 @@
+{
+  "metadata": {
+    "title": "יומן מסחר סווינג",
+    "description": "אפליקציה פרטית לתיעוד עסקאות, מדידת ביצועים ולמידה מכל פעולה."
+  },
+  "settings": {
+    "eyebrow": "הגדרות",
+    "title": "הגדרות וכלים",
+    "description": "מידע בסיסי על החשבון שלך, טעינת נתוני דמו ותזכורות אבטחה.",
+    "accountTitle": "חשבון",
+    "accountDescription": "פרופיל בסיסי המשויך למשתמש המחובר ב-Supabase.",
+    "email": "אימייל",
+    "loadedTrades": "עסקאות שהוזנו",
+    "preferredCurrency": "מטבע מועדף",
+    "profileCreated": "הפרופיל נוצר",
+    "demoTitle": "נתוני דוגמה",
+    "demoDescription": "אם תרצה לראות דשבורד מלא בלי להזין עסקאות ידנית, אפשר להכניס סט דמו בטוח עבור המשתמש שלך.",
+    "demoButton": "טעינת נתוני דמו",
+    "demoNote": "טעינת הדמו משתמשת בפונקציית SQL שמכניסה נתונים רק למשתמש המחובר. היא לא נוגעת בנתונים של משתמשים אחרים.",
+    "securityTitle": "הערות אבטחה",
+    "securityItems": [
+      "האפליקציה משתמשת ב-RLS כדי שכל משתמש יראה רק את העסקאות, ההערות והתמונות שלו.",
+      "בפרונטאנד נעשה שימוש רק במפתח anon הציבורי של Supabase.",
+      "מפתח service role לא נמצא בשימוש ואסור להעתיק אותו ל-Vercel כמשתנה ציבורי."
+    ],
+    "toasts": {
+      "demoError": "לא ניתן היה לטעון נתוני דמו.",
+      "demoSuccess": "נטענו {{count}} עסקאות דמו."
+    }
+  },
+  "notFound": {
+    "title": "לא מצאנו את מה שחיפשת",
+    "description": "העסקה או העמוד שניסית לפתוח לא קיימים או כבר לא זמינים.",
+    "action": "חזרה לדשבורד"
+  },
+  "validation": {
+    "validNumber": "הזן מספר תקין.",
+    "positive": "הערך חייב להיות גדול מ-0.",
+    "textTooLong": "הטקסט ארוך מדי.",
+    "requiredDate": "התאריך הוא שדה חובה.",
+    "validDate": "הזן תאריך תקין.",
+    "tickerRequired": "הסימול הוא שדה חובה.",
+    "tickerTooLong": "הסימול ארוך מדי.",
+    "setupRequired": "האסטרטגיה היא שדה חובה.",
+    "setupTooLong": "האסטרטגיה ארוכה מדי.",
+    "entryPricePositive": "מחיר הכניסה חייב להיות גדול מ-0.",
+    "quantityPositive": "הכמות חייבת להיות גדולה מ-0.",
+    "notNegative": "הערך לא יכול להיות שלילי.",
+    "maxTags": "אפשר לשמור עד 12 תגיות.",
+    "closedNeedsExitDate": "אם העסקה סגורה, תאריך היציאה הוא שדה חובה.",
+    "closedNeedsExitPrice": "אם העסקה סגורה, מחיר היציאה הוא שדה חובה.",
+    "exitDateNeedsPrice": "אם מילאת תאריך יציאה, צריך לציין גם מחיר יציאה.",
+    "exitPriceNeedsDate": "אם מילאת מחיר יציאה, צריך לציין גם תאריך יציאה.",
+    "exitBeforeEntry": "תאריך היציאה לא יכול להיות לפני תאריך הכניסה.",
+    "longStop": "בלונג, הסטופ לוס צריך להיות מתחת למחיר הכניסה.",
+    "longTakeProfit": "בלונג, הטייק פרופיט צריך להיות מעל מחיר הכניסה.",
+    "shortStop": "בשורט, הסטופ לוס צריך להיות מעל מחיר הכניסה.",
+    "shortTakeProfit": "בשורט, הטייק פרופיט צריך להיות מתחת למחיר הכניסה."
+  },
+  "api": {
+    "unauthorized": "לא מורשה. התחבר כדי להמשיך.",
+    "createTradeError": "לא ניתן היה ליצור את העסקה.",
+    "updateTradeError": "לא ניתן היה לעדכן את העסקה.",
+    "deleteTradeError": "לא ניתן היה למחוק את העסקה.",
+    "tradeNotFound": "העסקה לא נמצאה.",
+    "reviewForm": "בדוק את שדות הטופס.",
+    "createUnexpected": "אירעה שגיאה בלתי צפויה ביצירת העסקה.",
+    "updateUnexpected": "אירעה שגיאה בלתי צפויה בעדכון העסקה.",
+    "noFile": "לא התקבל קובץ.",
+    "invalidFileFormat": "פורמט לא נתמך. השתמש ב-PNG, JPG או WEBP.",
+    "fileTooLarge": "התמונה גדולה מהמקסימום של 5MB.",
+    "uploadImageError": "לא ניתן היה להעלות את התמונה.",
+    "linkImageError": "התמונה עלתה, אבל לא ניתן היה לקשר אותה לעסקה.",
+    "deleteImageError": "לא ניתן היה למחוק את התמונה.",
+    "seedDemoError": "לא ניתן היה להכניס את נתוני הדמו.",
+    "exportError": "לא ניתן היה לייצא את העסקאות."
+  },
+  "csv": {
+    "headers": {
+      "ticker": "סימול",
+      "asset": "נכס",
+      "direction": "כיוון",
+      "setup": "אסטרטגיה",
+      "status": "סטטוס",
+      "entryDate": "תאריך כניסה",
+      "exitDate": "תאריך יציאה",
+      "entryPrice": "מחיר כניסה",
+      "exitPrice": "מחיר יציאה",
+      "quantity": "כמות",
+      "fees": "עמלות",
+      "grossPnl": "רווח/הפסד ברוטו",
+      "netPnl": "רווח/הפסד נטו",
+      "pnlPercent": "רווח/הפסד %",
+      "totalRisk": "סיכון כולל",
+      "potentialReward": "תגמול פוטנציאלי",
+      "plannedRr": "יחס סיכון/תגמול מתוכנן",
+      "realizedR": "R ממומש",
+      "holdingDays": "ימי החזקה",
+      "tags": "תגיות"
+    }
+  },
+  "trades": {
+    "list": {
+      "eyebrow": "רישום",
+      "title": "עסקאות",
+      "description": "רשימה מלאה של עסקאות עם חיפוש, סינון, מיון וגישה לפרטים.",
+      "emptyTitle": "לא נמצאו עסקאות עם הסינון הזה",
+      "emptyDescription": "שנה את החיפוש או נקה את המסננים כדי לראות שוב את כל העסקאות.",
+      "emptyAction": "יצירת עסקה ראשונה"
+    },
+    "new": {
+      "eyebrow": "רישום חדש",
+      "title": "יצירת עסקה",
+      "description": "הזן את כל הנתונים הרלוונטיים כדי למדוד ביצועים, משמעת ואיכות ביצוע."
+    },
+    "edit": {
+      "eyebrow": "עריכה",
+      "title": "עריכת {{ticker}}",
+      "description": "עדכן נתונים, הערות, טעויות או צילום מסך בלי לאבד את היסטוריית היצירה."
+    },
+    "detailPage": {
+      "eyebrow": "פרטי העסקה",
+      "description": "סקירה מלאה של נתונים, מדדים, צילום מסך ותובנות שנרשמו לעסקה הזו.",
+      "editAction": "עריכת עסקה"
+    },
+    "filters": {
+      "searchPlaceholder": "חיפוש לפי סימול, אסטרטגיה, הערה או תגית...",
+      "allSetups": "כל האסטרטגיות",
+      "allStatuses": "כל הסטטוסים",
+      "allDirections": "לונג ושורט",
+      "sortPrefix": "מיון לפי: {{label}}",
+      "desc": "יורד",
+      "asc": "עולה"
+    },
+    "table": {
+      "pageOf": "עמוד {{page}} מתוך {{totalPages}}",
+      "deleteTitle": "מחיקת עסקה",
+      "deleteDescription": "{{ticker}} וצילום המסך המשויך יימחקו אם קיים. אי אפשר לבטל את הפעולה הזו.",
+      "deleteFallback": "העסקה הזו",
+      "deleteConfirm": "כן, למחוק",
+      "deleteError": "לא ניתן היה למחוק את העסקה.",
+      "deleteSuccess": "העסקה נמחקה בהצלחה."
+    },
+    "form": {
+      "labels": {
+        "ticker": "סימול",
+        "assetType": "סוג נכס",
+        "direction": "כיוון",
+        "status": "סטטוס",
+        "setup": "אסטרטגיה",
+        "entryDate": "תאריך כניסה",
+        "exitDate": "תאריך יציאה",
+        "quantity": "כמות מניות",
+        "entryPrice": "מחיר כניסה",
+        "exitPrice": "מחיר יציאה",
+        "initialStopLoss": "סטופ לוס ראשוני",
+        "initialTakeProfit": "טייק פרופיט ראשוני",
+        "fees": "עמלות",
+        "accountSize": "גודל חשבון",
+        "plannedRiskAmount": "סיכון מתוכנן בדולר",
+        "tags": "תגיות",
+        "thesis": "תזת כניסה",
+        "notes": "הערות",
+        "mistakes": "טעויות שבוצעו",
+        "lessonLearned": "לקח נלמד"
+      },
+      "placeholders": {
+        "ticker": "AAPL",
+        "setup": "Pullback EMA 21",
+        "tags": "swing, breakout, volume",
+        "thesis": "מה ראית ולמה לקחת את העסקה?",
+        "notes": "הקשר נוסף, ניהול העסקה, יציאות חלקיות ועוד.",
+        "mistakes": "מה השתבש או בוצע לא טוב?",
+        "lessonLearned": "מה תשנה או תחזור עליו בעסקה הבאה?"
+      },
+      "hints": {
+        "exitDateOpen": "השאר ריק אם העסקה עדיין פתוחה.",
+        "longStop": "בלונג הוא צריך להיות מתחת למחיר הכניסה.",
+        "shortStop": "בשורט הוא צריך להיות מעל מחיר הכניסה.",
+        "longTakeProfit": "בלונג הוא צריך להיות מעל מחיר הכניסה.",
+        "shortTakeProfit": "בשורט הוא צריך להיות מתחת למחיר הכניסה.",
+        "tags": "הפרד בפסיקים. לדוגמה: earnings, gap, trend"
+      },
+      "screenshot": {
+        "title": "צילום מסך של העסקה",
+        "description": "אופציונלי. נשמר ב-Supabase Storage במרחב הפרטי שלך.",
+        "alt": "צילום מסך של העסקה",
+        "choose": "לחץ כדי לבחור תמונה",
+        "requirements": "PNG, JPG או WEBP. עד 5MB.",
+        "keep": "שמירת התמונה",
+        "removeCurrent": "הסרת התמונה הנוכחית",
+        "removeFile": "הסרת קובץ"
+      },
+      "toasts": {
+        "invalidImageType": "מותרות רק תמונות PNG, JPG או WEBP.",
+        "imageTooLarge": "התמונה חייבת להיות קטנה מ-5MB.",
+        "imageUploadError": "העסקה נשמרה, אבל לא ניתן היה להעלות את התמונה.",
+        "imageDeleteError": "לא ניתן היה למחוק את התמונה הנוכחית.",
+        "saveError": "לא ניתן היה לשמור את העסקה.",
+        "created": "העסקה נוצרה בהצלחה.",
+        "updated": "העסקה עודכנה בהצלחה."
+      }
+    },
+    "detail": {
+      "setup": "אסטרטגיה",
+      "realizedNetPnl": "רווח/הפסד נטו ממומש",
+      "grossPnl": "רווח/הפסד ברוטו",
+      "pnlPercent": "רווח/הפסד %",
+      "realizedR": "R ממומש",
+      "holdingDays": "ימי החזקה",
+      "totalRisk": "סיכון כולל",
+      "potentialReward": "תגמול פוטנציאלי",
+      "plannedRr": "יחס סיכון/תגמול מתוכנן",
+      "fees": "עמלות",
+      "entryDate": "תאריך כניסה",
+      "exitDate": "תאריך יציאה",
+      "quantity": "כמות",
+      "entryPrice": "מחיר כניסה",
+      "exitPrice": "מחיר יציאה",
+      "accountSize": "גודל חשבון",
+      "asset": "נכס",
+      "initialStopLoss": "סטופ לוס ראשוני",
+      "initialTakeProfit": "טייק פרופיט ראשוני",
+      "plannedRisk": "סיכון מתוכנן",
+      "created": "נוצר",
+      "updated": "עודכן",
+      "thesis": "תזת כניסה",
+      "notes": "הערות",
+      "mistakes": "טעויות שבוצעו",
+      "lessonLearned": "למידה",
+      "screenshotTitle": "צילום מסך",
+      "screenshotDescription": "צילום המשויך לעסקה לצורך סקירת ההקשר והביצוע.",
+      "screenshotAlt": "צילום מסך של העסקה {{ticker}}",
+      "noScreenshot": "לא הועלה צילום מסך."
+    },
+    "assetType": {
+      "stock": "מניה",
+      "etf": "ETF"
+    },
+    "direction": {
+      "long": "לונג",
+      "short": "שורט"
+    },
+    "status": {
+      "open": "פתוחה",
+      "closed": "סגורה",
+      "cancelled": "בוטלה",
+      "invalidated": "נפסלה"
+    },
+    "outcome": {
+      "winner": "מנצחת",
+      "loser": "מפסידה",
+      "breakeven": "איזון",
+      "pending": "בהמתנה"
+    },
+    "resultFilter": {
+      "all": "הכול",
+      "winner": "מנצחת",
+      "loser": "מפסידה",
+      "breakeven": "איזון"
+    },
+    "sort": {
+      "entry_date": "תאריך כניסה",
+      "exit_date": "תאריך יציאה",
+      "created_at": "תאריך יצירה",
+      "ticker": "סימול",
+      "net_pnl": "רווח/הפסד נטו",
+      "realized_r": "R ממומש",
+      "holding_days": "ימי החזקה"
+    }
+  },
+  "language": {
+    "label": "שפה",
+    "es": "ספרדית",
+    "he": "עברית"
+  },
+  "common": {
+    "actions": {
+      "apply": "החל",
+      "back": "חזרה",
+      "cancel": "ביטול",
+      "confirm": "אישור",
+      "delete": "מחיקה",
+      "edit": "עריכה",
+      "saveChanges": "שמירת שינויים",
+      "createTrade": "יצירת עסקה",
+      "newTrade": "עסקה חדשה",
+      "clear": "ניקוי",
+      "exportCsv": "ייצוא CSV",
+      "previous": "הקודם",
+      "next": "הבא"
+    },
+    "states": {
+      "loadingData": "טוען נתונים...",
+      "saving": "שומר...",
+      "deleting": "מוחק...",
+      "noContent": "אין תוכן.",
+      "authenticatedUser": "משתמש מחובר"
+    },
+    "units": {
+      "days": "ימים"
+    },
+    "metrics": {
+      "ticker": "סימול",
+      "status": "סטטוס",
+      "setup": "אסטרטגיה",
+      "entry": "כניסה",
+      "exit": "יציאה",
+      "netPnl": "רווח/הפסד נטו",
+      "pnlPercent": "רווח/הפסד %",
+      "r": "R",
+      "holding": "משך החזקה",
+      "actions": "פעולות"
+    }
+  },
+  "nav": {
+    "dashboard": "לוח בקרה",
+    "trades": "עסקאות",
+    "analytics": "אנליטיקה",
+    "settings": "הגדרות"
+  },
+  "layout": {
+    "brand": "יומן סווינג",
+    "title": "יומן מסחר",
+    "subtitle": "תיעוד, ניתוח ושיפור ביצועי הסווינג שלך.",
+    "focusTitle": "מיקוד מקצועי",
+    "focusDescription": "הגרפים משתמשים רק בנתונים אמיתיים מעסקאות סגורות כדי לשמור על מדדים נקיים ועקביים.",
+    "signOut": "יציאה",
+    "signingOut": "יוצא...",
+    "signOutError": "לא ניתן היה להתנתק."
+  },
+  "login": {
+    "eyebrow": "דשבורד פרטי",
+    "heroTitle": "יומן מסחר רציני למדידת התהליך שלך, לא רק התוצאה.",
+    "heroDescription": "שמור כניסות, יציאות, סיכון, צילומי מסך ותובנות. אחר כך הפוך אותם למדדים ברורים שמגלים אילו אסטרטגיות באמת עובדות במסחר סווינג.",
+    "accessBadge": "גישה פרטית",
+    "title": "יומן מסחר סווינג",
+    "description": "תעד עסקאות, הערך אסטרטגיות והפוך את ההיסטוריה שלך להחלטות טובות יותר.",
+    "magicTab": "קישור כניסה",
+    "passwordTab": "אימייל + סיסמה",
+    "emailLabel": "אימייל",
+    "emailPlaceholder": "you@email.com",
+    "passwordLabel": "סיסמה",
+    "passwordPlaceholder": "לפחות 6 תווים",
+    "magicHint": "תקבל קישור מאובטח לכניסה ללא סיסמה.",
+    "passwordHint": "אם החשבון לא קיים, הוא ייווצר עם האימייל והסיסמה האלה.",
+    "sendMagicLink": "שליחת קישור כניסה",
+    "submitPassword": "כניסה או יצירת חשבון",
+    "validation": {
+      "email": "הזן אימייל תקין.",
+      "passwordMin": "הסיסמה חייבת להכיל לפחות 6 תווים."
+    },
+    "toasts": {
+      "magicError": "לא ניתן היה לשלוח את קישור הכניסה.",
+      "magicSuccess": "בדוק את האימייל. שלחנו לך קישור כניסה.",
+      "authError": "לא ניתן היה להתחבר או ליצור חשבון.",
+      "sessionSuccess": "התחברת בהצלחה.",
+      "signupSuccess": "החשבון נוצר. בדוק את האימייל כדי לאשר גישה."
+    }
+  },
+  "dashboard": {
+    "eyebrow": "סקירה כללית",
+    "title": "דשבורד ביצועים",
+    "description": "כל יומן מסחר הסווינג שלך מרוכז במדדים שימושיים לשיפור התהליך, הסיכון והביצוע.",
+    "emptyTitle": "עדיין לא תיעדת עסקאות",
+    "emptyDescription": "התחל עם העסקה הראשונה כדי להפעיל את הדשבורד, הסטטיסטיקות והניתוח ההיסטורי.",
+    "emptyAction": "יצירת עסקה ראשונה",
+    "stats": {
+      "totalNetPnl": "רווח/הפסד נטו מצטבר",
+      "winRate": "שיעור הצלחה",
+      "winRateHint": "{{wins}} מנצחות / {{losses}} מפסידות",
+      "profitFactor": "Profit factor",
+      "profitFactorHint": "מבוסס על רווח/הפסד נטו של עסקאות סגורות",
+      "expectancy": "תוחלת",
+      "expectancyHint": "תוחלת ממוצעת לעסקה סגורה",
+      "averageWinner": "עסקה מנצחת ממוצעת",
+      "averageLoser": "עסקה מפסידה ממוצעת",
+      "averageR": "R ממוצע",
+      "maxDrawdown": "ירידה מקסימלית",
+      "closedTrades": "עסקאות סגורות",
+      "openTrades": "עסקאות פתוחות",
+      "averageHolding": "החזקה ממוצעת",
+      "averageHoldingHint": "ימים ממוצעים בעסקאות סגורות",
+      "longShortRatio": "יחס לונג מול שורט",
+      "longShortRatioHint": "חלוקה בין לונג לשורט",
+      "bestTrade": "העסקה הטובה ביותר",
+      "worstTrade": "העסקה הגרועה ביותר"
+    },
+    "charts": {
+      "tickerTitle": "ביצועים לפי סימול",
+      "tickerDescription": "הנכסים שמוסיפים או גורעים הכי הרבה מהעקומה שלך.",
+      "setupTitle": "ביצועים לפי אסטרטגיה",
+      "setupDescription": "אילו אסטרטגיות נותנות לך יתרון אמיתי."
+    }
+  },
+  "analytics": {
+    "eyebrow": "ניתוח",
+    "title": "אנליטיקת מסחר סווינג",
+    "description": "קריאה עמוקה יותר של סיכון, יתרון ועקביות על בסיס נתונים סגורים ונוסחאות יציבות.",
+    "emptyTitle": "עדיין אין עסקאות סגורות",
+    "emptyDescription": "סגור כמה עסקאות כדי לפתוח התפלגות R, עקומות והשוואות.",
+    "emptyAction": "יצירת עסקה",
+    "stats": {
+      "totalWon": "סך רווחים",
+      "totalLost": "סך הפסדים",
+      "winningTradesPercent": "% עסקאות מנצחות",
+      "averageHolding": "החזקה ממוצעת"
+    },
+    "charts": {
+      "tickerTitle": "תוצאות לפי סימול",
+      "tickerDescription": "השוואת הנכסים הרווחיים ביותר.",
+      "setupTitle": "תוצאות לפי אסטרטגיה",
+      "setupDescription": "השוואת אסטרטגיות כדי להבין איפה נמצא היתרון שלך.",
+      "longShortTitle": "לונג מול שורט",
+      "longShortDescription": "השוואה פשוטה של הביצועים לפי כיוון."
+    }
+  },
+  "charts": {
+    "equityCurve": {
+      "title": "עקומת הון",
+      "description": "מציגה את ההתפתחות המצטברת של הרווח/הפסד נטו מעסקאות סגורות.",
+      "empty": "עדיין אין עסקאות סגורות לציור העקומה."
+    },
+    "monthlyPnl": {
+      "title": "רווח/הפסד חודשי",
+      "description": "עוזר לזהות חודשים חזקים, חודשים חלשים ועקביות.",
+      "empty": "עדיין אין מספיק היסטוריה חודשית."
+    },
+    "performance": {
+      "empty": "אין מספיק נתונים לגרף הזה."
+    },
+    "rDistribution": {
+      "title": "התפלגות R",
+      "description": "מודד אם הרווחים שלך גדולים מספיק ביחס להפסדים.",
+      "empty": "ההתפלגות תופיע אחרי שתסגור עסקאות עם סיכון מוגדר."
+    },
+    "winRateTrend": {
+      "title": "התפתחות שיעור ההצלחה",
+      "description": "מאפשר לראות אם איכות הביצוע משתפרת או נחלשת לאורך זמן.",
+      "empty": "עדיין אין מספיק חודשים להצגת התפתחות."
+    }
+  }
+}

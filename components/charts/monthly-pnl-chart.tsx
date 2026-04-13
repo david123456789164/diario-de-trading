@@ -1,9 +1,11 @@
 "use client";
 
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { useTranslation } from "react-i18next";
 
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
-import { formatCurrency } from "@/lib/utils/format";
+import { formatCurrency, formatCompactCurrency } from "@/lib/utils/format";
+import { getLanguageLocale } from "@/src/i18n/settings";
 
 type Item = {
   label: string;
@@ -11,16 +13,19 @@ type Item = {
 };
 
 export function MonthlyPnlChart({ data }: { data: Item[] }) {
+  const { t, i18n } = useTranslation();
+  const locale = getLanguageLocale(i18n.language);
+
   return (
     <Card className="space-y-4">
       <div className="space-y-1">
-        <CardTitle>P&amp;L mensual</CardTitle>
-        <CardDescription>Te ayuda a detectar meses fuertes, meses débiles y consistencia.</CardDescription>
+        <CardTitle>{t("charts.monthlyPnl.title")}</CardTitle>
+        <CardDescription>{t("charts.monthlyPnl.description")}</CardDescription>
       </div>
 
       {data.length === 0 ? (
         <div className="flex h-[320px] items-center justify-center rounded-2xl border border-dashed border-stroke text-sm text-muted">
-          Todavía no hay suficiente historial mensual.
+          {t("charts.monthlyPnl.empty")}
         </div>
       ) : (
         <div className="h-[320px]">
@@ -28,10 +33,10 @@ export function MonthlyPnlChart({ data }: { data: Item[] }) {
             <BarChart data={data}>
               <CartesianGrid stroke="#1f2a3d" strokeDasharray="4 4" vertical={false} />
               <XAxis dataKey="label" stroke="#90a0bc" tickLine={false} axisLine={false} />
-              <YAxis stroke="#90a0bc" tickLine={false} axisLine={false} tickFormatter={(value) => `$${value}`} />
+              <YAxis stroke="#90a0bc" tickLine={false} axisLine={false} tickFormatter={(value) => formatCompactCurrency(Number(value), "USD", locale)} />
               <Tooltip
                 contentStyle={{ backgroundColor: "#101725", borderColor: "#1f2a3d", borderRadius: 16 }}
-                formatter={(value: number) => formatCurrency(value)}
+                formatter={(value: number) => formatCurrency(value, "USD", locale)}
               />
               <Bar dataKey="pnl" radius={[10, 10, 0, 0]} fill="#67b3ff" />
             </BarChart>
@@ -41,4 +46,3 @@ export function MonthlyPnlChart({ data }: { data: Item[] }) {
     </Card>
   );
 }
-

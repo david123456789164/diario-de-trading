@@ -3,8 +3,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Mail, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -13,23 +14,30 @@ import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 
-const magicLinkSchema = z.object({
-  email: z.string().email("Ingresa un email válido."),
-});
+function createMagicLinkSchema(t: (key: string) => string) {
+  return z.object({
+    email: z.string().email(t("login.validation.email")),
+  });
+}
 
-const passwordSchema = z.object({
-  email: z.string().email("Ingresa un email válido."),
-  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres."),
-});
+function createPasswordSchema(t: (key: string) => string) {
+  return z.object({
+    email: z.string().email(t("login.validation.email")),
+    password: z.string().min(6, t("login.validation.passwordMin")),
+  });
+}
 
-type MagicLinkValues = z.infer<typeof magicLinkSchema>;
-type PasswordValues = z.infer<typeof passwordSchema>;
+type MagicLinkValues = z.infer<ReturnType<typeof createMagicLinkSchema>>;
+type PasswordValues = z.infer<ReturnType<typeof createPasswordSchema>>;
 
 export function LoginCard() {
   const router = useRouter();
+  const { t } = useTranslation();
   const supabase = createBrowserSupabaseClient();
   const [mode, setMode] = useState<"magic" | "password">("magic");
   const [loading, setLoading] = useState(false);
+  const magicLinkSchema = useMemo(() => createMagicLinkSchema(t), [t]);
+  const passwordSchema = useMemo(() => createPasswordSchema(t), [t]);
 
   const magicForm = useForm<MagicLinkValues>({
     resolver: zodResolver(magicLinkSchema),
@@ -54,11 +62,11 @@ export function LoginCard() {
     setLoading(false);
 
     if (error) {
-      toast.error(error.message || "No se pudo enviar el magic link.");
+      toast.error(error.message || t("login.toasts.magicError"));
       return;
     }
 
-    toast.success("Revisa tu correo. Te enviamos un enlace para entrar.");
+    toast.success(t("login.toasts.magicSuccess"));
     magicForm.reset();
   }
 
@@ -87,32 +95,30 @@ export function LoginCard() {
     setLoading(false);
 
     if (signUpResult.error) {
-      toast.error(signUpResult.error.message || "No se pudo iniciar sesión ni crear la cuenta.");
+      toast.error(signUpResult.error.message || t("login.toasts.authError"));
       return;
     }
 
     if (signUpResult.data.session) {
-      toast.success("Sesión iniciada correctamente.");
+      toast.success(t("login.toasts.sessionSuccess"));
       router.push("/dashboard");
       router.refresh();
       return;
     }
 
-    toast.success("Cuenta creada. Revisa tu email para confirmar el acceso.");
+    toast.success(t("login.toasts.signupSuccess"));
   }
 
   return (
     <Card className="w-full max-w-xl space-y-8 border-accent/10 bg-panel/90 p-8">
       <div className="space-y-3">
-        <div className="inline-flex w-fit items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-accent">
+        <div className="rtl-kicker inline-flex w-fit items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-accent">
           <ShieldCheck className="h-3.5 w-3.5" />
-          Acceso privado
+          {t("login.accessBadge")}
         </div>
         <div className="space-y-2">
-          <CardTitle className="text-3xl md:text-4xl">Diario de trading swing</CardTitle>
-          <CardDescription className="text-base">
-            Registra operaciones, evalúa setups y convierte tu historial en decisiones mejores.
-          </CardDescription>
+          <CardTitle className="text-3xl md:text-4xl">{t("login.title")}</CardTitle>
+          <CardDescription className="text-base">{t("login.description")}</CardDescription>
         </div>
       </div>
 
@@ -122,61 +128,60 @@ export function LoginCard() {
           className={`rounded-2xl px-4 py-3 text-sm font-medium transition ${mode === "magic" ? "bg-accent text-background" : "text-muted hover:bg-panel-soft hover:text-text"}`}
           onClick={() => setMode("magic")}
         >
-          Magic link
+          {t("login.magicTab")}
         </button>
         <button
           type="button"
           className={`rounded-2xl px-4 py-3 text-sm font-medium transition ${mode === "password" ? "bg-accent text-background" : "text-muted hover:bg-panel-soft hover:text-text"}`}
           onClick={() => setMode("password")}
         >
-          Email + contraseña
+          {t("login.passwordTab")}
         </button>
       </div>
 
       {mode === "magic" ? (
         <form className="space-y-5" onSubmit={magicForm.handleSubmit(submitMagic)}>
           <div className="space-y-2">
-            <label className="text-sm font-medium text-text">Email</label>
-            <Input placeholder="tu@email.com" {...magicForm.register("email")} />
+            <label className="text-sm font-medium text-text">{t("login.emailLabel")}</label>
+            <Input placeholder={t("login.emailPlaceholder")} {...magicForm.register("email")} />
             {magicForm.formState.errors.email ? (
               <p className="text-sm text-danger">{magicForm.formState.errors.email.message}</p>
             ) : (
-              <p className="text-sm text-muted">Recibirás un enlace seguro para entrar sin contraseña.</p>
+              <p className="text-sm text-muted">{t("login.magicHint")}</p>
             )}
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
-            Enviar enlace mágico
+            {t("login.sendMagicLink")}
           </Button>
         </form>
       ) : (
         <form className="space-y-5" onSubmit={passwordForm.handleSubmit(submitPassword)}>
           <div className="space-y-2">
-            <label className="text-sm font-medium text-text">Email</label>
-            <Input placeholder="tu@email.com" {...passwordForm.register("email")} />
+            <label className="text-sm font-medium text-text">{t("login.emailLabel")}</label>
+            <Input placeholder={t("login.emailPlaceholder")} {...passwordForm.register("email")} />
             {passwordForm.formState.errors.email ? (
               <p className="text-sm text-danger">{passwordForm.formState.errors.email.message}</p>
             ) : null}
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-text">Contraseña</label>
-            <Input type="password" placeholder="Mínimo 6 caracteres" {...passwordForm.register("password")} />
+            <label className="text-sm font-medium text-text">{t("login.passwordLabel")}</label>
+            <Input type="password" placeholder={t("login.passwordPlaceholder")} {...passwordForm.register("password")} />
             {passwordForm.formState.errors.password ? (
               <p className="text-sm text-danger">{passwordForm.formState.errors.password.message}</p>
             ) : (
-              <p className="text-sm text-muted">Si la cuenta no existe, se creará con este email y contraseña.</p>
+              <p className="text-sm text-muted">{t("login.passwordHint")}</p>
             )}
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
-            Entrar o crear cuenta
+            {t("login.submitPassword")}
           </Button>
         </form>
       )}
     </Card>
   );
 }
-

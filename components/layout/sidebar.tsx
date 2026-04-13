@@ -3,27 +3,29 @@
 import { BarChart3, CandlestickChart, LayoutDashboard, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslation } from "react-i18next";
 
 import { cn } from "@/lib/utils/cn";
 
 const navigation = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/trades", label: "Trades", icon: CandlestickChart },
-  { href: "/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/settings", label: "Ajustes", icon: Settings },
+  { href: "/dashboard", labelKey: "nav.dashboard", icon: LayoutDashboard },
+  { href: "/trades", labelKey: "nav.trades", icon: CandlestickChart },
+  { href: "/analytics", labelKey: "nav.analytics", icon: BarChart3 },
+  { href: "/settings", labelKey: "nav.settings", icon: Settings },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   return (
     <aside className="glass-panel sticky top-6 hidden h-[calc(100vh-3rem)] w-72 flex-col justify-between p-6 xl:flex">
       <div className="space-y-10">
         <div className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent">Swing Journal</p>
+          <p className="rtl-kicker text-xs font-semibold uppercase tracking-[0.24em] text-accent">{t("layout.brand")}</p>
           <div>
-            <h2 className="text-2xl font-semibold text-text">Diario de trading</h2>
-            <p className="text-sm text-muted">Registra, analiza y mejora tu ejecución swing.</p>
+            <h2 className="text-2xl font-semibold text-text">{t("layout.title")}</h2>
+            <p className="text-sm text-muted">{t("layout.subtitle")}</p>
           </div>
         </div>
 
@@ -42,7 +44,7 @@ export function Sidebar() {
                 )}
               >
                 <item.icon className="h-4 w-4" />
-                {item.label}
+                {t(item.labelKey)}
               </Link>
             );
           })}
@@ -50,12 +52,9 @@ export function Sidebar() {
       </div>
 
       <div className="rounded-3xl border border-accent/20 bg-accent/10 p-4">
-        <p className="text-sm font-medium text-text">Enfoque profesional</p>
-        <p className="mt-2 text-sm text-muted">
-          Los gráficos usan solo datos reales cerrados para mantener métricas limpias y consistentes.
-        </p>
+        <p className="text-sm font-medium text-text">{t("layout.focusTitle")}</p>
+        <p className="mt-2 text-sm text-muted">{t("layout.focusDescription")}</p>
       </div>
     </aside>
   );
 }
-

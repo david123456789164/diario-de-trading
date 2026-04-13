@@ -1,5 +1,6 @@
-import { differenceInCalendarDays, format } from "date-fns";
+import { differenceInCalendarDays } from "date-fns";
 
+import type { AppLocale } from "@/src/i18n/settings";
 import type { TradeRow } from "@/types/database";
 
 export type TradeOutcome = "winner" | "loser" | "breakeven" | "pending";
@@ -83,26 +84,33 @@ function groupPerformance(trades: ComputedTrade[], keySelector: (trade: Computed
 
 function buildRDistribution(trades: ComputedTrade[]) {
   const buckets = new Map<string, number>();
-  ["<= -2R", "-2R a -1R", "-1R a 0R", "0R a 1R", "1R a 2R", ">= 2R"].forEach((label) =>
+  ["<= -2R", "-2R / -1R", "-1R / 0R", "0R / 1R", "1R / 2R", ">= 2R"].forEach((label) =>
     buckets.set(label, 0),
   );
 
   trades.forEach((trade) => {
     if (trade.realizedR === null) return;
     const r = trade.realizedR;
-    let bucket = "0R a 1R";
+    let bucket = "0R / 1R";
 
     if (r <= -2) bucket = "<= -2R";
-    else if (r <= -1) bucket = "-2R a -1R";
-    else if (r < 0) bucket = "-1R a 0R";
-    else if (r < 1) bucket = "0R a 1R";
-    else if (r < 2) bucket = "1R a 2R";
+    else if (r <= -1) bucket = "-2R / -1R";
+    else if (r < 0) bucket = "-1R / 0R";
+    else if (r < 1) bucket = "0R / 1R";
+    else if (r < 2) bucket = "1R / 2R";
     else bucket = ">= 2R";
 
     buckets.set(bucket, (buckets.get(bucket) ?? 0) + 1);
   });
 
   return [...buckets.entries()].map(([bucket, count]) => ({ bucket, count }));
+}
+
+function formatChartMonth(date: Date, locale: AppLocale, year: "2-digit" | "numeric") {
+  return new Intl.DateTimeFormat(locale, {
+    month: "short",
+    year,
+  }).format(date);
 }
 
 function sortClosedTradesForEquity(trades: ComputedTrade[]) {
@@ -169,7 +177,7 @@ export function computeTrade(trade: TradeRow): ComputedTrade {
   };
 }
 
-export function buildAnalytics(trades: TradeRow[]): TradingAnalytics {
+export function buildAnalytics(trades: TradeRow[], locale: AppLocale = "es"): TradingAnalytics {
   const computed = trades.map(computeTrade);
   const closedTrades = computed.filter((trade) => trade.isClosed);
   const openTrades = computed.filter((trade) => trade.raw.status === "open");
@@ -213,7 +221,7 @@ export function buildAnalytics(trades: TradeRow[]): TradingAnalytics {
 
     return {
       date: equityDate,
-      label: format(new Date(equityDate), "MMM yy"),
+      label: formatChartMonth(new Date(equityDate), locale, "2-digit"),
       equity: round(equity),
       drawdown: round(drawdown),
     };
@@ -222,8 +230,9 @@ export function buildAnalytics(trades: TradeRow[]): TradingAnalytics {
   const monthMap = new Map<string, { month: string; label: string; pnl: number; trades: number; wins: number }>();
   closedTrades.forEach((trade) => {
     const baseDate = trade.raw.exit_date ?? trade.raw.entry_date;
-    const month = format(new Date(baseDate), "yyyy-MM");
-    const label = format(new Date(baseDate), "MMM yyyy");
+    const date = new Date(baseDate);
+    const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+    const label = formatChartMonth(date, locale, "numeric");
     const current = monthMap.get(month) ?? { month, label, pnl: 0, trades: 0, wins: 0 };
     current.pnl += trade.netPnL ?? 0;
     current.trades += 1;

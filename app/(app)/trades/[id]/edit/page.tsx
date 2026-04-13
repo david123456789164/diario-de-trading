@@ -1,8 +1,10 @@
 import { TradeForm } from "@/components/trades/trade-form";
 import { PageHeader } from "@/components/ui/page-header";
 import { getSignedScreenshotUrl, getTradeByIdForCurrentUser } from "@/lib/trading/queries";
+import { getServerTranslation } from "@/src/i18n/server";
 
 export default async function EditTradePage({ params }: { params: Promise<{ id: string }> }) {
+  const { t } = await getServerTranslation();
   const { id } = await params;
   const trade = await getTradeByIdForCurrentUser(id);
   const screenshotUrl = await getSignedScreenshotUrl(trade.screenshot_path);
@@ -10,9 +12,9 @@ export default async function EditTradePage({ params }: { params: Promise<{ id: 
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow="Edición"
-        title={`Editar ${trade.ticker}`}
-        description="Actualiza datos, notas, errores o screenshot sin perder el historial de creación."
+        eyebrow={t("trades.edit.eyebrow")}
+        title={t("trades.edit.title", { ticker: trade.ticker })}
+        description={t("trades.edit.description")}
       />
 
       <TradeForm
@@ -46,4 +48,3 @@ export default async function EditTradePage({ params }: { params: Promise<{ id: 
     </div>
   );
 }
-
