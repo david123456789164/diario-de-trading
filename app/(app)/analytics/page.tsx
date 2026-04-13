@@ -19,7 +19,6 @@ export default async function AnalyticsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow={t("analytics.eyebrow")}
         title={t("analytics.title")}
         description={t("analytics.description")}
       />
@@ -49,12 +48,10 @@ export default async function AnalyticsPage() {
             <RDistributionChart data={analytics.rDistribution} />
             <PerformanceBarChart
               title={t("analytics.charts.tickerTitle")}
-              description={t("analytics.charts.tickerDescription")}
               data={analytics.resultsByTicker}
             />
             <PerformanceBarChart
               title={t("analytics.charts.setupTitle")}
-              description={t("analytics.charts.setupDescription")}
               data={analytics.resultsBySetup}
             />
           </section>
@@ -62,7 +59,6 @@ export default async function AnalyticsPage() {
           <section className="grid gap-6 xl:grid-cols-2">
             <PerformanceBarChart
               title={t("analytics.charts.longShortTitle")}
-              description={t("analytics.charts.longShortDescription")}
               data={analytics.longsVsShorts.map((item) => ({ name: t(`trades.direction.${item.side.toLowerCase()}`), pnl: item.pnl, trades: item.trades }))}
             />
             <WinRateTrendChart data={analytics.monthlyPnL.map((item) => ({ label: item.label, winRate: item.winRate }))} />

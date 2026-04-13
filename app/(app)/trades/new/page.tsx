@@ -8,7 +8,6 @@ export default async function NewTradePage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow={t("trades.new.eyebrow")}
         title={t("trades.new.title")}
         description={t("trades.new.description")}
       />

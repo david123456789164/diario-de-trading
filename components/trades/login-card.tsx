@@ -122,17 +122,17 @@ export function LoginCard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 rounded-2xl border border-stroke bg-background/40 p-2">
+      <div className="grid grid-cols-2 gap-3 rounded-lg border border-stroke bg-background/40 p-2">
         <button
           type="button"
-          className={`rounded-2xl px-4 py-3 text-sm font-medium transition ${mode === "magic" ? "bg-accent text-background" : "text-muted hover:bg-panel-soft hover:text-text"}`}
+          className={`rounded-lg px-4 py-3 text-sm font-medium transition ${mode === "magic" ? "bg-accent text-background" : "text-muted hover:bg-panel-soft hover:text-text"}`}
           onClick={() => setMode("magic")}
         >
           {t("login.magicTab")}
         </button>
         <button
           type="button"
-          className={`rounded-2xl px-4 py-3 text-sm font-medium transition ${mode === "password" ? "bg-accent text-background" : "text-muted hover:bg-panel-soft hover:text-text"}`}
+          className={`rounded-lg px-4 py-3 text-sm font-medium transition ${mode === "password" ? "bg-accent text-background" : "text-muted hover:bg-panel-soft hover:text-text"}`}
           onClick={() => setMode("password")}
         >
           {t("login.passwordTab")}

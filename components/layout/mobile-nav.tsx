@@ -27,7 +27,7 @@ export function MobileNav() {
             key={item.href}
             href={item.href}
             className={cn(
-              "flex min-w-[140px] items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-medium transition",
+              "flex min-w-[140px] items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium transition",
               active ? "bg-accent text-background" : "bg-background/30 text-muted hover:text-text",
             )}
           >

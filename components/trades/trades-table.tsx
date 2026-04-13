@@ -140,7 +140,7 @@ export function TradesTable({
                   <td className="px-4 py-4 text-muted">{trade.raw.setup}</td>
                   <td className="px-4 py-4 text-muted">{formatDate(trade.raw.entry_date, "—", locale)}</td>
                   <td className="px-4 py-4 text-muted">{formatDate(trade.raw.exit_date, "—", locale)}</td>
-                  <td className={`px-4 py-4 font-medium ${trade.netPnL && trade.netPnL < 0 ? "text-danger" : "text-text"}`}>
+                  <td className={`px-4 py-4 font-medium ${trade.netPnL == null ? "text-muted" : trade.netPnL < 0 ? "text-danger" : "text-accent"}`}>
                     {formatCurrency(trade.netPnL, "USD", locale)}
                   </td>
                   <td className="px-4 py-4 text-muted">{formatPercent(trade.pnlPercent, 2, locale)}</td>

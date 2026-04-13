@@ -3,7 +3,7 @@
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useTranslation } from "react-i18next";
 
-import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { Card, CardTitle } from "@/components/ui/card";
 import { formatCurrency, formatCompactCurrency } from "@/lib/utils/format";
 import { getLanguageLocale } from "@/src/i18n/settings";
 
@@ -20,11 +20,10 @@ export function MonthlyPnlChart({ data }: { data: Item[] }) {
     <Card className="space-y-4">
       <div className="space-y-1">
         <CardTitle>{t("charts.monthlyPnl.title")}</CardTitle>
-        <CardDescription>{t("charts.monthlyPnl.description")}</CardDescription>
       </div>
 
       {data.length === 0 ? (
-        <div className="flex h-[320px] items-center justify-center rounded-2xl border border-dashed border-stroke text-sm text-muted">
+        <div className="flex h-[320px] items-center justify-center rounded-lg border border-dashed border-stroke text-sm text-muted">
           {t("charts.monthlyPnl.empty")}
         </div>
       ) : (

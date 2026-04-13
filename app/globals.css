@@ -67,11 +67,11 @@ a {
 
 @layer components {
   .glass-panel {
-    @apply rounded-3xl border border-stroke/80 bg-panel/90 shadow-panel backdrop-blur;
+    @apply rounded-lg border border-stroke/80 bg-panel/90 shadow-panel backdrop-blur;
   }
 
   .subtle-panel {
-    @apply rounded-2xl border border-stroke/70 bg-panel-soft/90;
+    @apply rounded-lg border border-stroke/70 bg-panel-soft/90;
   }
 
   .page-shell {

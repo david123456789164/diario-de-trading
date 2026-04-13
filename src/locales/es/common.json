@@ -4,25 +4,16 @@
     "description": "App privada para registrar trades, medir rendimiento y aprender de cada operación."
   },
   "settings": {
-    "eyebrow": "Configuración",
-    "title": "Ajustes y utilidades",
-    "description": "Información básica de tu cuenta, carga de datos demo y recordatorios de seguridad.",
+    "title": "Ajustes",
+    "description": "Cuenta y datos de ejemplo.",
     "accountTitle": "Cuenta",
-    "accountDescription": "Perfil básico asociado al usuario autenticado en Supabase.",
     "email": "Email",
     "loadedTrades": "Trades cargados",
     "preferredCurrency": "Moneda preferida",
     "profileCreated": "Perfil creado",
     "demoTitle": "Datos de ejemplo",
-    "demoDescription": "Si quieres ver el dashboard lleno sin cargar trades manualmente, puedes insertar un set demo seguro para tu usuario.",
+    "demoDescription": "Carga operaciones de práctica para explorar el dashboard.",
     "demoButton": "Cargar datos demo",
-    "demoNote": "La carga demo usa una función SQL que inserta datos solo para el usuario autenticado. No toca datos de otros usuarios.",
-    "securityTitle": "Notas de seguridad",
-    "securityItems": [
-      "La app usa RLS para que cada usuario vea solo sus trades, notas e imágenes.",
-      "En el frontend solo se usa la anon key pública de Supabase.",
-      "La service role key no se usa ni se debe copiar en Vercel como variable pública."
-    ],
     "toasts": {
       "demoError": "No se pudieron cargar datos demo.",
       "demoSuccess": "Se cargaron {{count}} trades demo."
@@ -103,7 +94,7 @@
     "list": {
       "eyebrow": "Registro",
       "title": "Trades",
-      "description": "Lista completa de operaciones con búsqueda, filtros, orden y acceso al detalle.",
+      "description": "Filtra, revisa y abre tus operaciones.",
       "emptyTitle": "No encontramos trades con esos filtros",
       "emptyDescription": "Ajusta la búsqueda o limpia los filtros para volver a ver todas tus operaciones.",
       "emptyAction": "Crear primer trade"
@@ -111,16 +102,16 @@
     "new": {
       "eyebrow": "Nuevo registro",
       "title": "Crear trade",
-      "description": "Carga todos los datos relevantes de la operación para medir rendimiento, disciplina y calidad de ejecución."
+      "description": "Registra entrada, riesgo, salida y notas clave."
     },
     "edit": {
       "eyebrow": "Edición",
       "title": "Editar {{ticker}}",
-      "description": "Actualiza datos, notas, errores o screenshot sin perder el historial de creación."
+      "description": "Actualiza los datos del trade."
     },
     "detailPage": {
       "eyebrow": "Detalle del trade",
-      "description": "Revisión completa de datos, métricas, screenshot y aprendizaje registrado para esta operación.",
+      "description": "Entrada, salida, riesgo y resultado.",
       "editAction": "Editar trade"
     },
     "filters": {
@@ -147,22 +138,22 @@
         "assetType": "Tipo de activo",
         "direction": "Dirección",
         "status": "Estado",
-        "setup": "Setup / estrategia",
+        "setup": "Setup",
         "entryDate": "Fecha de entrada",
         "exitDate": "Fecha de salida",
-        "quantity": "Cantidad de shares",
+        "quantity": "Cantidad",
         "entryPrice": "Precio de entrada",
         "exitPrice": "Precio de salida",
         "initialStopLoss": "Stop loss inicial",
         "initialTakeProfit": "Take profit inicial",
-        "fees": "Fees / comisiones",
+        "fees": "Comisiones",
         "accountSize": "Tamaño de cuenta",
         "plannedRiskAmount": "Riesgo planeado en USD",
         "tags": "Etiquetas",
         "thesis": "Tesis de entrada",
         "notes": "Notas",
         "mistakes": "Errores cometidos",
-        "lessonLearned": "Aprendizaje / lesson learned"
+        "lessonLearned": "Aprendizaje"
       },
       "placeholders": {
         "ticker": "AAPL",
@@ -183,7 +174,7 @@
       },
       "screenshot": {
         "title": "Screenshot del trade",
-        "description": "Opcional. Se guarda en Supabase Storage dentro de tu espacio privado.",
+        "description": "Opcional para revisar el contexto del trade.",
         "alt": "Screenshot del trade",
         "choose": "Haz clic para elegir una imagen",
         "requirements": "PNG, JPG o WEBP. Máximo 5 MB.",
@@ -361,7 +352,7 @@
   "dashboard": {
     "eyebrow": "Visión general",
     "title": "Dashboard de rendimiento",
-    "description": "Todo tu diario de swing trading resumido en métricas prácticas para mejorar proceso, riesgo y ejecución.",
+    "description": "P&L, win rate, riesgo y estado de tus trades.",
     "emptyTitle": "Todavía no registraste trades",
     "emptyDescription": "Empieza con tu primera operación para activar el dashboard, las estadísticas y el análisis histórico.",
     "emptyAction": "Crear primer trade",
@@ -371,12 +362,12 @@
       "winRateHint": "{{wins}} ganadores / {{losses}} perdedores",
       "profitFactor": "Profit factor",
       "profitFactorHint": "Usa P&L neto de trades cerrados",
-      "expectancy": "Expectancy",
+      "expectancy": "Expectativa",
       "expectancyHint": "Expectativa promedio por trade cerrado",
       "averageWinner": "Average winner",
       "averageLoser": "Average loser",
       "averageR": "R promedio",
-      "maxDrawdown": "Max drawdown",
+      "maxDrawdown": "Drawdown max.",
       "closedTrades": "Trades cerrados",
       "openTrades": "Trades abiertos",
       "averageHolding": "Holding promedio",
@@ -396,7 +387,7 @@
   "analytics": {
     "eyebrow": "Análisis",
     "title": "Analytics de swing trading",
-    "description": "Lectura más profunda de riesgo, edge y consistencia usando solo datos cerrados y fórmulas robustas.",
+    "description": "Riesgo, edge y consistencia de tus trades cerrados.",
     "emptyTitle": "Aún no hay trades cerrados",
     "emptyDescription": "Cierra algunas operaciones para desbloquear distribución de R, curvas y comparativas.",
     "emptyAction": "Crear trade",

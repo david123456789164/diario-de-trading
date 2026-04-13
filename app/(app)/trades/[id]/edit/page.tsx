@@ -12,7 +12,6 @@ export default async function EditTradePage({ params }: { params: Promise<{ id: 
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow={t("trades.edit.eyebrow")}
         title={t("trades.edit.title", { ticker: trade.ticker })}
         description={t("trades.edit.description")}
       />

@@ -19,7 +19,7 @@ export function Sidebar() {
   const { t } = useTranslation();
 
   return (
-    <aside className="glass-panel sticky top-6 hidden h-[calc(100vh-3rem)] w-72 flex-col justify-between p-6 xl:flex">
+    <aside className="glass-panel sticky top-6 hidden h-[calc(100vh-3rem)] w-72 flex-col p-6 xl:flex">
       <div className="space-y-10">
         <div className="space-y-3">
           <p className="rtl-kicker text-xs font-semibold uppercase tracking-[0.24em] text-accent">{t("layout.brand")}</p>
@@ -37,7 +37,7 @@ export function Sidebar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 rounded-2xl border border-transparent px-4 py-3 text-sm font-medium transition",
+                  "flex items-center gap-3 rounded-lg border border-transparent px-4 py-3 text-sm font-medium transition",
                   active
                     ? "border-accent/30 bg-accent/10 text-accent"
                     : "text-muted hover:border-stroke hover:bg-background/40 hover:text-text",
@@ -51,10 +51,6 @@ export function Sidebar() {
         </nav>
       </div>
 
-      <div className="rounded-3xl border border-accent/20 bg-accent/10 p-4">
-        <p className="text-sm font-medium text-text">{t("layout.focusTitle")}</p>
-        <p className="mt-2 text-sm text-muted">{t("layout.focusDescription")}</p>
-      </div>
     </aside>
   );
 }

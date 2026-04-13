@@ -29,7 +29,7 @@ export function ConfirmDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-3xl border border-stroke bg-panel p-6 shadow-panel">
+      <div className="w-full max-w-md rounded-lg border border-stroke bg-panel p-6 shadow-panel">
         <div className="space-y-2">
           <h3 className="text-xl font-semibold text-text">{title}</h3>
           <p className="text-sm text-muted">{description}</p>

@@ -25,7 +25,6 @@ export default async function TradesPage({
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow={t("trades.list.eyebrow")}
         title={t("trades.list.title")}
         description={t("trades.list.description")}
         actions={

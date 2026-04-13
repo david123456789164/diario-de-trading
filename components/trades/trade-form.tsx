@@ -337,13 +337,13 @@ export function TradeForm({
         </div>
 
         {existingImageUrl && !removeCurrentImage ? (
-          <div className="overflow-hidden rounded-3xl border border-stroke">
+          <div className="overflow-hidden rounded-lg border border-stroke">
             <img src={existingImageUrl} alt={t("trades.form.screenshot.alt")} className="max-h-[360px] w-full object-cover" />
           </div>
         ) : null}
 
         <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-center">
-          <label className="flex min-h-[120px] cursor-pointer flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-stroke bg-background/40 p-6 text-center">
+          <label className="flex min-h-[120px] cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-stroke bg-background/40 p-6 text-center">
             <UploadCloud className="h-7 w-7 text-accent" />
             <div className="space-y-1">
               <p className="text-sm font-medium text-text">

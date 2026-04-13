@@ -13,7 +13,6 @@ export default async function SettingsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow={t("settings.eyebrow")}
         title={t("settings.title")}
         description={t("settings.description")}
       />
@@ -22,7 +21,6 @@ export default async function SettingsPage() {
         <Card className="space-y-4">
           <div className="space-y-1">
             <h2 className="text-xl font-semibold text-text">{t("settings.accountTitle")}</h2>
-            <p className="text-sm text-muted">{t("settings.accountDescription")}</p>
           </div>
           <div className="grid gap-3 md:grid-cols-2">
             <div className="subtle-panel p-4">
@@ -50,20 +48,8 @@ export default async function SettingsPage() {
             <p className="text-sm text-muted">{t("settings.demoDescription")}</p>
           </div>
           <SeedDemoButton />
-          <div className="rounded-3xl border border-stroke bg-background/40 p-4 text-sm text-muted">
-            {t("settings.demoNote")}
-          </div>
         </Card>
       </div>
-
-      <Card className="space-y-3">
-        <h2 className="text-xl font-semibold text-text">{t("settings.securityTitle")}</h2>
-        <ul className="space-y-2 text-sm text-muted">
-          {(t("settings.securityItems", { returnObjects: true }) as string[]).map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-      </Card>
     </div>
   );
 }

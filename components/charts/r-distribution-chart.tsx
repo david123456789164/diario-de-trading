@@ -3,7 +3,7 @@
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useTranslation } from "react-i18next";
 
-import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { Card, CardTitle } from "@/components/ui/card";
 
 type Item = {
   bucket: string;
@@ -17,11 +17,10 @@ export function RDistributionChart({ data }: { data: Item[] }) {
     <Card className="space-y-4">
       <div className="space-y-1">
         <CardTitle>{t("charts.rDistribution.title")}</CardTitle>
-        <CardDescription>{t("charts.rDistribution.description")}</CardDescription>
       </div>
 
       {data.every((item) => item.count === 0) ? (
-        <div className="flex h-[280px] items-center justify-center rounded-2xl border border-dashed border-stroke text-sm text-muted">
+        <div className="flex h-[280px] items-center justify-center rounded-lg border border-dashed border-stroke text-sm text-muted">
           {t("charts.rDistribution.empty")}
         </div>
       ) : (

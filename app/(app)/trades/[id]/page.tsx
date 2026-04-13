@@ -16,7 +16,6 @@ export default async function TradeDetailPage({ params }: { params: Promise<{ id
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow={t("trades.detailPage.eyebrow")}
         title={`${trade.ticker} · ${trade.setup}`}
         description={t("trades.detailPage.description")}
         actions={

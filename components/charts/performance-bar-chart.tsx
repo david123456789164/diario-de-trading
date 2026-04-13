@@ -3,7 +3,7 @@
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useTranslation } from "react-i18next";
 
-import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { Card, CardTitle } from "@/components/ui/card";
 import { formatCurrency, formatCompactCurrency } from "@/lib/utils/format";
 import { getLanguageLocale } from "@/src/i18n/settings";
 
@@ -15,11 +15,9 @@ type Item = {
 
 export function PerformanceBarChart({
   title,
-  description,
   data,
 }: {
   title: string;
-  description: string;
   data: Item[];
 }) {
   const { t, i18n } = useTranslation();
@@ -29,11 +27,10 @@ export function PerformanceBarChart({
     <Card className="space-y-4">
       <div className="space-y-1">
         <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
       </div>
 
       {data.length === 0 ? (
-        <div className="flex h-[280px] items-center justify-center rounded-2xl border border-dashed border-stroke text-sm text-muted">
+        <div className="flex h-[280px] items-center justify-center rounded-lg border border-dashed border-stroke text-sm text-muted">
           {t("charts.performance.empty")}
         </div>
       ) : (

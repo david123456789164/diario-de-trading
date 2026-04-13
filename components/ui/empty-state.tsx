@@ -16,7 +16,7 @@ export function EmptyState({
 }) {
   return (
     <Card className="flex min-h-[260px] flex-col items-center justify-center gap-4 border-dashed text-center">
-      <div className="rounded-3xl border border-stroke bg-background/60 p-4">
+      <div className="rounded-lg border border-stroke bg-background/60 p-4">
         <BarChart3 className="h-8 w-8 text-accent" />
       </div>
       <div className="space-y-2">
@@ -26,7 +26,7 @@ export function EmptyState({
       {actionHref && actionLabel ? (
         <Link
           href={actionHref}
-          className="inline-flex h-11 items-center justify-center rounded-2xl bg-accent px-4 text-sm font-medium text-background transition hover:bg-accent/90"
+          className="inline-flex h-11 items-center justify-center rounded-lg bg-accent px-4 text-sm font-medium text-background transition hover:bg-accent/90"
         >
           {actionLabel}
         </Link>

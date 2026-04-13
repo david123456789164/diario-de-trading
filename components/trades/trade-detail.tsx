@@ -6,7 +6,6 @@ import type { ComputedTrade } from "@/lib/trading/calculations";
 import {
   formatCurrency,
   formatDate,
-  formatDateTime,
   formatHoldingDays,
   formatNumber,
   formatPercent,
@@ -70,7 +69,7 @@ export function TradeDetail({
           </div>
 
           <div className="text-end">
-            <p className={`text-3xl font-semibold ${trade.netPnL && trade.netPnL < 0 ? "text-danger" : "text-accent"}`}>
+            <p className={`text-3xl font-semibold ${trade.netPnL == null ? "text-muted" : trade.netPnL < 0 ? "text-danger" : "text-accent"}`}>
               {formatCurrency(trade.netPnL, "USD", locale)}
             </p>
             <p className="mt-1 text-sm text-muted">{t("trades.detail.realizedNetPnl")}</p>
@@ -102,8 +101,6 @@ export function TradeDetail({
             <DetailMetric label={t("trades.detail.initialStopLoss")} value={formatCurrency(trade.raw.initial_stop_loss, "USD", locale)} />
             <DetailMetric label={t("trades.detail.initialTakeProfit")} value={formatCurrency(trade.raw.initial_take_profit, "USD", locale)} />
             <DetailMetric label={t("trades.detail.plannedRisk")} value={formatCurrency(trade.raw.planned_risk_amount, "USD", locale)} />
-            <DetailMetric label={t("trades.detail.created")} value={formatDateTime(trade.raw.created_at, "—", locale)} />
-            <DetailMetric label={t("trades.detail.updated")} value={formatDateTime(trade.raw.updated_at, "—", locale)} />
           </Card>
 
           <Block title={t("trades.detail.thesis")} content={trade.raw.thesis} />
@@ -115,15 +112,14 @@ export function TradeDetail({
         <Card className="space-y-4">
           <div className="space-y-1">
             <h3 className="text-lg font-semibold text-text">{t("trades.detail.screenshotTitle")}</h3>
-            <p className="text-sm text-muted">{t("trades.detail.screenshotDescription")}</p>
           </div>
 
           {screenshotUrl ? (
-            <div className="overflow-hidden rounded-3xl border border-stroke">
+            <div className="overflow-hidden rounded-lg border border-stroke">
               <img src={screenshotUrl} alt={t("trades.detail.screenshotAlt", { ticker: trade.raw.ticker })} className="w-full object-cover" />
             </div>
           ) : (
-            <div className="flex min-h-[300px] items-center justify-center rounded-3xl border border-dashed border-stroke bg-background/40 text-sm text-muted">
+            <div className="flex min-h-[300px] items-center justify-center rounded-lg border border-dashed border-stroke bg-background/40 text-sm text-muted">
               {t("trades.detail.noScreenshot")}
             </div>
           )}
