@@ -327,27 +327,32 @@
     "accessBadge": "גישה פרטית",
     "title": "יומן מסחר סווינג",
     "description": "תעד עסקאות, הערך אסטרטגיות והפוך את ההיסטוריה שלך להחלטות טובות יותר.",
-    "magicTab": "קישור כניסה",
-    "passwordTab": "אימייל + סיסמה",
     "emailLabel": "אימייל",
     "emailPlaceholder": "you@email.com",
     "passwordLabel": "סיסמה",
     "passwordPlaceholder": "לפחות 6 תווים",
-    "magicHint": "תקבל קישור מאובטח לכניסה ללא סיסמה.",
-    "passwordHint": "אם החשבון לא קיים, הוא ייווצר עם האימייל והסיסמה האלה.",
-    "sendMagicLink": "שליחת קישור כניסה",
-    "submitPassword": "כניסה או יצירת חשבון",
+    "passwordHint": "רק משתמשים מאושרים יכולים להיכנס.",
     "validation": {
+      "nameRequired": "הזן שם.",
       "email": "הזן אימייל תקין.",
       "passwordMin": "הסיסמה חייבת להכיל לפחות 6 תווים."
     },
     "toasts": {
-      "magicError": "לא ניתן היה לשלוח את קישור הכניסה.",
-      "magicSuccess": "בדוק את האימייל. שלחנו לך קישור כניסה.",
-      "authError": "לא ניתן היה להתחבר או ליצור חשבון.",
+      "invalidCredentials": "פרטי ההתחברות שגויים.",
+      "accessPending": "הגישה ממתינה לאישור.",
+      "accessRejected": "הגישה נדחתה.",
       "sessionSuccess": "התחברת בהצלחה.",
-      "signupSuccess": "החשבון נוצר. בדוק את האימייל כדי לאשר גישה."
-    }
+      "signupRequestSuccess": "הבקשה נשלחה. ממתינה לאישור.",
+      "signupRequestError": "לא ניתן לשלוח את הבקשה.",
+      "signupAlreadyApproved": "החשבון כבר אושר. אפשר להתחבר."
+    },
+    "loginTab": "כניסה",
+    "registerTab": "בקשת גישה",
+    "nameLabel": "שם",
+    "namePlaceholder": "השם שלך",
+    "registerHint": "הבקשה תישאר ממתינה עד שאדמין יאשר אותה.",
+    "submitLogin": "כניסה",
+    "submitSignup": "שליחת בקשה"
   },
   "dashboard": {
     "eyebrow": "סקירה כללית",

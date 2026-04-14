@@ -327,27 +327,32 @@
     "accessBadge": "Acceso privado",
     "title": "Diario de trading swing",
     "description": "Registra operaciones, evalúa setups y convierte tu historial en decisiones mejores.",
-    "magicTab": "Enlace mágico",
-    "passwordTab": "Email + contraseña",
     "emailLabel": "Email",
     "emailPlaceholder": "tu@email.com",
     "passwordLabel": "Contraseña",
     "passwordPlaceholder": "Mínimo 6 caracteres",
-    "magicHint": "Recibirás un enlace seguro para entrar sin contraseña.",
-    "passwordHint": "Si la cuenta no existe, se creará con este email y contraseña.",
-    "sendMagicLink": "Enviar enlace mágico",
-    "submitPassword": "Entrar o crear cuenta",
+    "passwordHint": "Solo usuarios aprobados pueden entrar.",
     "validation": {
+      "nameRequired": "Ingresa tu nombre.",
       "email": "Ingresa un email válido.",
       "passwordMin": "La contraseña debe tener al menos 6 caracteres."
     },
     "toasts": {
-      "magicError": "No se pudo enviar el enlace mágico.",
-      "magicSuccess": "Revisa tu correo. Te enviamos un enlace para entrar.",
-      "authError": "No se pudo iniciar sesión ni crear la cuenta.",
+      "invalidCredentials": "Credenciales inválidas.",
+      "accessPending": "Acceso pendiente.",
+      "accessRejected": "Acceso rechazado.",
       "sessionSuccess": "Sesión iniciada correctamente.",
-      "signupSuccess": "Cuenta creada. Revisa tu email para confirmar el acceso."
-    }
+      "signupRequestSuccess": "Solicitud enviada. Pendiente de aprobación.",
+      "signupRequestError": "No se pudo enviar la solicitud.",
+      "signupAlreadyApproved": "La cuenta ya fue aprobada. Inicia sesión."
+    },
+    "loginTab": "Entrar",
+    "registerTab": "Solicitar acceso",
+    "nameLabel": "Nombre",
+    "namePlaceholder": "Tu nombre",
+    "registerHint": "La solicitud quedará pendiente hasta que un admin la apruebe.",
+    "submitLogin": "Entrar",
+    "submitSignup": "Enviar solicitud"
   },
   "dashboard": {
     "eyebrow": "Visión general",

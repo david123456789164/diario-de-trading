@@ -5,6 +5,23 @@ import { NextResponse } from "next/server";
 import { getPublicEnv } from "@/lib/utils/env";
 import type { Database } from "@/types/database";
 
+function isInvalidRefreshToken(error: { message?: string; name?: string; status?: number } | null) {
+  if (!error) return false;
+  return error.status === 400 && /invalid refresh token|refresh token not found/i.test(error.message ?? "");
+}
+
+function clearSupabaseAuthCookies(request: NextRequest, response: NextResponse) {
+  request.cookies
+    .getAll()
+    .filter((cookie) => cookie.name.startsWith("sb-") && cookie.name.includes("auth-token"))
+    .forEach((cookie) => {
+      response.cookies.set(cookie.name, "", {
+        path: "/",
+        maxAge: 0,
+      });
+    });
+}
+
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({
     request,
@@ -38,7 +55,11 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  await supabase.auth.getUser();
+  const { error } = await supabase.auth.getUser();
+
+  if (isInvalidRefreshToken(error)) {
+    clearSupabaseAuthCookies(request, response);
+  }
 
   return response;
 }

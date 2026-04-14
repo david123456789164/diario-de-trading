@@ -15,6 +15,8 @@ export type Database = {
           email: string | null;
           full_name: string | null;
           preferred_currency: string;
+          approved: boolean;
+          approved_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -23,6 +25,8 @@ export type Database = {
           email?: string | null;
           full_name?: string | null;
           preferred_currency?: string;
+          approved?: boolean;
+          approved_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -30,7 +34,43 @@ export type Database = {
           email?: string | null;
           full_name?: string | null;
           preferred_currency?: string;
+          approved?: boolean;
+          approved_at?: string | null;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      pending_signups: {
+        Row: {
+          id: string;
+          name: string;
+          email: string;
+          password_encrypted: string | null;
+          password_nonce: string | null;
+          status: "pending" | "approved" | "rejected";
+          created_at: string;
+          approved_at: string | null;
+          approved_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          email: string;
+          password_encrypted?: string | null;
+          password_nonce?: string | null;
+          status?: "pending" | "approved" | "rejected";
+          created_at?: string;
+          approved_at?: string | null;
+          approved_by?: string | null;
+        };
+        Update: {
+          name?: string;
+          email?: string;
+          password_encrypted?: string | null;
+          password_nonce?: string | null;
+          status?: "pending" | "approved" | "rejected";
+          approved_at?: string | null;
+          approved_by?: string | null;
         };
         Relationships: [];
       };
@@ -138,6 +178,7 @@ export type Database = {
 };
 
 export type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"];
+export type PendingSignupRow = Database["public"]["Tables"]["pending_signups"]["Row"];
 export type TradeRow = Database["public"]["Tables"]["trades"]["Row"];
 export type TradeInsert = Database["public"]["Tables"]["trades"]["Insert"];
 export type TradeUpdate = Database["public"]["Tables"]["trades"]["Update"];

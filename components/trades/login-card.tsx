@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Mail, ShieldCheck } from "lucide-react";
+import { Loader2, LogIn, ShieldCheck, UserPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -14,99 +14,128 @@ import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 
-function createMagicLinkSchema(t: (key: string) => string) {
-  return z.object({
-    email: z.string().email(t("login.validation.email")),
-  });
-}
-
-function createPasswordSchema(t: (key: string) => string) {
+function createLoginSchema(t: (key: string) => string) {
   return z.object({
     email: z.string().email(t("login.validation.email")),
     password: z.string().min(6, t("login.validation.passwordMin")),
   });
 }
 
-type MagicLinkValues = z.infer<ReturnType<typeof createMagicLinkSchema>>;
-type PasswordValues = z.infer<ReturnType<typeof createPasswordSchema>>;
+function createSignupSchema(t: (key: string) => string) {
+  return z.object({
+    name: z.string().trim().min(1, t("login.validation.nameRequired")),
+    email: z.string().email(t("login.validation.email")),
+    password: z.string().min(6, t("login.validation.passwordMin")),
+  });
+}
+
+type LoginValues = z.infer<ReturnType<typeof createLoginSchema>>;
+type SignupValues = z.infer<ReturnType<typeof createSignupSchema>>;
+type SignupStatus = "pending" | "approved" | "rejected" | "unknown";
 
 export function LoginCard() {
   const router = useRouter();
   const { t } = useTranslation();
   const supabase = createBrowserSupabaseClient();
-  const [mode, setMode] = useState<"magic" | "password">("magic");
+  const [mode, setMode] = useState<"login" | "register">("login");
   const [loading, setLoading] = useState(false);
-  const magicLinkSchema = useMemo(() => createMagicLinkSchema(t), [t]);
-  const passwordSchema = useMemo(() => createPasswordSchema(t), [t]);
+  const loginSchema = useMemo(() => createLoginSchema(t), [t]);
+  const signupSchema = useMemo(() => createSignupSchema(t), [t]);
 
-  const magicForm = useForm<MagicLinkValues>({
-    resolver: zodResolver(magicLinkSchema),
-    defaultValues: { email: "" },
-  });
-
-  const passwordForm = useForm<PasswordValues>({
-    resolver: zodResolver(passwordSchema),
+  const loginForm = useForm<LoginValues>({
+    resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
 
-  async function submitMagic(values: MagicLinkValues) {
-    setLoading(true);
-    const redirectTo = `${window.location.origin}/auth/callback`;
-    const { error } = await supabase.auth.signInWithOtp({
-      email: values.email,
-      options: {
-        emailRedirectTo: redirectTo,
-      },
+  const signupForm = useForm<SignupValues>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: { name: "", email: "", password: "" },
+  });
+
+  async function getSignupStatus(email: string): Promise<SignupStatus> {
+    const response = await fetch("/api/auth/signup-status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
     });
-
-    setLoading(false);
-
-    if (error) {
-      toast.error(error.message || t("login.toasts.magicError"));
-      return;
-    }
-
-    toast.success(t("login.toasts.magicSuccess"));
-    magicForm.reset();
+    const body = await response.json().catch(() => null);
+    return body?.status ?? "unknown";
   }
 
-  async function submitPassword(values: PasswordValues) {
+  async function submitLogin(values: LoginValues) {
     setLoading(true);
 
-    const loginResult = await supabase.auth.signInWithPassword({
-      email: values.email,
-      password: values.password,
-    });
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: values.email,
+        password: values.password,
+      });
 
-    if (!loginResult.error) {
-      router.push("/dashboard");
-      router.refresh();
-      return;
-    }
+      if (error) {
+        const status = await getSignupStatus(values.email);
 
-    const signUpResult = await supabase.auth.signUp({
-      email: values.email,
-      password: values.password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
+        if (status === "pending") {
+          toast.error(t("login.toasts.accessPending"));
+          router.push("/pending?status=pending");
+          return;
+        }
 
-    setLoading(false);
+        if (status === "rejected") {
+          toast.error(t("login.toasts.accessRejected"));
+          return;
+        }
 
-    if (signUpResult.error) {
-      toast.error(signUpResult.error.message || t("login.toasts.authError"));
-      return;
-    }
+        toast.error(t("login.toasts.invalidCredentials"));
+        return;
+      }
 
-    if (signUpResult.data.session) {
       toast.success(t("login.toasts.sessionSuccess"));
       router.push("/dashboard");
       router.refresh();
-      return;
+    } finally {
+      setLoading(false);
     }
+  }
 
-    toast.success(t("login.toasts.signupSuccess"));
+  async function submitSignup(values: SignupValues) {
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/auth/request-signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+
+      if (response.ok) {
+        toast.success(t("login.toasts.signupRequestSuccess"));
+        signupForm.reset();
+        router.push("/pending?status=pending");
+        return;
+      }
+
+      const body = await response.json().catch(() => null);
+      if (body?.code === "pending") {
+        toast.error(t("login.toasts.accessPending"));
+        router.push("/pending?status=pending");
+        return;
+      }
+
+      if (body?.code === "rejected") {
+        toast.error(t("login.toasts.accessRejected"));
+        return;
+      }
+
+      if (body?.code === "approved") {
+        toast.error(t("login.toasts.signupAlreadyApproved"));
+        setMode("login");
+        return;
+      }
+
+      toast.error(typeof body?.error === "string" ? body.error : t("login.toasts.signupRequestError"));
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -125,60 +154,76 @@ export function LoginCard() {
       <div className="grid grid-cols-2 gap-3 rounded-lg border border-stroke bg-background/40 p-2">
         <button
           type="button"
-          className={`rounded-lg px-4 py-3 text-sm font-medium transition ${mode === "magic" ? "bg-accent text-background" : "text-muted hover:bg-panel-soft hover:text-text"}`}
-          onClick={() => setMode("magic")}
+          className={`rounded-lg px-4 py-3 text-sm font-medium transition ${mode === "login" ? "bg-accent text-background" : "text-muted hover:bg-panel-soft hover:text-text"}`}
+          onClick={() => setMode("login")}
         >
-          {t("login.magicTab")}
+          {t("login.loginTab")}
         </button>
         <button
           type="button"
-          className={`rounded-lg px-4 py-3 text-sm font-medium transition ${mode === "password" ? "bg-accent text-background" : "text-muted hover:bg-panel-soft hover:text-text"}`}
-          onClick={() => setMode("password")}
+          className={`rounded-lg px-4 py-3 text-sm font-medium transition ${mode === "register" ? "bg-accent text-background" : "text-muted hover:bg-panel-soft hover:text-text"}`}
+          onClick={() => setMode("register")}
         >
-          {t("login.passwordTab")}
+          {t("login.registerTab")}
         </button>
       </div>
 
-      {mode === "magic" ? (
-        <form className="space-y-5" onSubmit={magicForm.handleSubmit(submitMagic)}>
+      {mode === "login" ? (
+        <form className="space-y-5" onSubmit={loginForm.handleSubmit(submitLogin)}>
           <div className="space-y-2">
             <label className="text-sm font-medium text-text">{t("login.emailLabel")}</label>
-            <Input placeholder={t("login.emailPlaceholder")} {...magicForm.register("email")} />
-            {magicForm.formState.errors.email ? (
-              <p className="text-sm text-danger">{magicForm.formState.errors.email.message}</p>
-            ) : (
-              <p className="text-sm text-muted">{t("login.magicHint")}</p>
-            )}
-          </div>
-
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
-            {t("login.sendMagicLink")}
-          </Button>
-        </form>
-      ) : (
-        <form className="space-y-5" onSubmit={passwordForm.handleSubmit(submitPassword)}>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-text">{t("login.emailLabel")}</label>
-            <Input placeholder={t("login.emailPlaceholder")} {...passwordForm.register("email")} />
-            {passwordForm.formState.errors.email ? (
-              <p className="text-sm text-danger">{passwordForm.formState.errors.email.message}</p>
+            <Input placeholder={t("login.emailPlaceholder")} {...loginForm.register("email")} />
+            {loginForm.formState.errors.email ? (
+              <p className="text-sm text-danger">{loginForm.formState.errors.email.message}</p>
             ) : null}
           </div>
 
           <div className="space-y-2">
             <label className="text-sm font-medium text-text">{t("login.passwordLabel")}</label>
-            <Input type="password" placeholder={t("login.passwordPlaceholder")} {...passwordForm.register("password")} />
-            {passwordForm.formState.errors.password ? (
-              <p className="text-sm text-danger">{passwordForm.formState.errors.password.message}</p>
+            <Input type="password" placeholder={t("login.passwordPlaceholder")} {...loginForm.register("password")} />
+            {loginForm.formState.errors.password ? (
+              <p className="text-sm text-danger">{loginForm.formState.errors.password.message}</p>
             ) : (
               <p className="text-sm text-muted">{t("login.passwordHint")}</p>
             )}
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
-            {t("login.submitPassword")}
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogIn className="h-4 w-4" />}
+            {t("login.submitLogin")}
+          </Button>
+        </form>
+      ) : (
+        <form className="space-y-5" onSubmit={signupForm.handleSubmit(submitSignup)}>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-text">{t("login.nameLabel")}</label>
+            <Input placeholder={t("login.namePlaceholder")} {...signupForm.register("name")} />
+            {signupForm.formState.errors.name ? (
+              <p className="text-sm text-danger">{signupForm.formState.errors.name.message}</p>
+            ) : null}
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-text">{t("login.emailLabel")}</label>
+            <Input placeholder={t("login.emailPlaceholder")} {...signupForm.register("email")} />
+            {signupForm.formState.errors.email ? (
+              <p className="text-sm text-danger">{signupForm.formState.errors.email.message}</p>
+            ) : null}
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-text">{t("login.passwordLabel")}</label>
+            <Input type="password" placeholder={t("login.passwordPlaceholder")} {...signupForm.register("password")} />
+            {signupForm.formState.errors.password ? (
+              <p className="text-sm text-danger">{signupForm.formState.errors.password.message}</p>
+            ) : (
+              <p className="text-sm text-muted">{t("login.registerHint")}</p>
+            )}
+          </div>
+
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
+            {t("login.submitSignup")}
           </Button>
         </form>
       )}
