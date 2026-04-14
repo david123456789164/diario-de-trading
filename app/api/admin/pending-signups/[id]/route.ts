@@ -1,15 +1,35 @@
+import type { AuthError, SupabaseClient, User } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { ZodError, z } from "zod";
 
 import { requireAdminRoute } from "@/lib/auth/admin";
 import { decryptPendingPassword } from "@/lib/auth/pending-password";
+import type { Database } from "@/types/database";
 
 export const preferredRegion = "fra1";
 
 const reviewSignupSchema = z.object({
   action: z.enum(["approve", "reject"]),
 });
+
+async function findAuthUserByEmail(adminSupabase: SupabaseClient<Database>, email: string) {
+  const normalizedEmail = email.trim().toLowerCase();
+  let page = 1;
+
+  while (true) {
+    const { data, error } = await adminSupabase.auth.admin.listUsers({ page, perPage: 1000 });
+    if (error) return { user: null, error } satisfies { user: User | null; error: AuthError | null };
+
+    const user = data.users.find((candidate) => candidate.email?.toLowerCase() === normalizedEmail);
+    if (user) return { user, error: null } satisfies { user: User | null; error: AuthError | null };
+
+    if (data.users.length < 1000) {
+      return { user: null, error: null } satisfies { user: User | null; error: AuthError | null };
+    }
+    page += 1;
+  }
+}
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const auth = await requireAdminRoute();
@@ -56,24 +76,39 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     }
 
     const password = decryptPendingPassword(signup.password_encrypted, signup.password_nonce);
-    const createdUser = await auth.adminSupabase.auth.admin.createUser({
-      email: signup.email,
-      password,
-      email_confirm: true,
-      user_metadata: {
-        full_name: signup.name,
-        name: signup.name,
-      },
-    });
+    const existingUser = await findAuthUserByEmail(auth.adminSupabase, signup.email);
 
-    if (createdUser.error || !createdUser.data.user) {
-      return NextResponse.json({ error: "No se pudo crear el usuario aprobado." }, { status: 400 });
+    if (existingUser.error) {
+      return NextResponse.json({ error: "No se pudo revisar si el usuario ya existe." }, { status: 500 });
+    }
+
+    const approvedUser = existingUser.user
+      ? await auth.adminSupabase.auth.admin.updateUserById(existingUser.user.id, {
+          password,
+          email_confirm: true,
+          user_metadata: {
+            full_name: signup.name,
+            name: signup.name,
+          },
+        })
+      : await auth.adminSupabase.auth.admin.createUser({
+          email: signup.email,
+          password,
+          email_confirm: true,
+          user_metadata: {
+            full_name: signup.name,
+            name: signup.name,
+          },
+        });
+
+    if (approvedUser.error || !approvedUser.data.user) {
+      return NextResponse.json({ error: "No se pudo crear o actualizar el usuario aprobado." }, { status: 400 });
     }
 
     const approvedAt = new Date().toISOString();
     const { error: profileError } = await auth.adminSupabase.from("profiles").upsert(
       {
-        id: createdUser.data.user.id,
+        id: approvedUser.data.user.id,
         email: signup.email,
         full_name: signup.name,
         approved: true,
