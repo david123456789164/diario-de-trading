@@ -3,8 +3,8 @@ import Link from "next/link";
 import { EquityCurveChart } from "@/components/charts/equity-curve-chart";
 import { MonthlyPnlChart } from "@/components/charts/monthly-pnl-chart";
 import { PerformanceBarChart } from "@/components/charts/performance-bar-chart";
+import { TradingJournalIllustration } from "@/components/dashboard/trading-journal-illustration";
 import { EmptyState } from "@/components/ui/empty-state";
-import { PageHeader } from "@/components/ui/page-header";
 import { StatCard } from "@/components/ui/stat-card";
 import { Button } from "@/components/ui/button";
 import { buildAnalytics } from "@/lib/trading/calculations";
@@ -19,15 +19,28 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title={t("dashboard.title")}
-        description={t("dashboard.description")}
-        actions={
-          <Link href="/trades/new">
-            <Button>{t("common.actions.newTrade")}</Button>
-          </Link>
-        }
-      />
+      <section className="glass-panel overflow-hidden p-0">
+        <div className="grid gap-6 p-5 md:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.72fr)] lg:items-center">
+          <div className="space-y-5">
+            <div className="space-y-2">
+              <p className="rtl-kicker text-xs font-semibold uppercase tracking-[0.24em] text-accent">{t("dashboard.eyebrow")}</p>
+              <h1 className="text-3xl font-semibold text-text md:text-4xl">{t("dashboard.title")}</h1>
+              <p className="max-w-2xl text-sm leading-6 text-muted md:text-base">{t("dashboard.description")}</p>
+            </div>
+            <Link href="/trades/new">
+              <Button>{t("common.actions.newTrade")}</Button>
+            </Link>
+          </div>
+
+          <div className="relative min-h-[220px] overflow-hidden rounded-lg border border-stroke/70 bg-background/45 p-3 sm:min-h-[260px]">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_65%_20%,rgba(61,217,180,0.18),transparent_34%),radial-gradient(circle_at_12%_85%,rgba(103,179,255,0.12),transparent_30%)]" />
+            <TradingJournalIllustration
+              title={t("dashboard.title")}
+              className="relative mx-auto max-w-[480px]"
+            />
+          </div>
+        </div>
+      </section>
 
       {trades.length === 0 ? (
         <EmptyState
