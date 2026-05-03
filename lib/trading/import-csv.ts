@@ -43,6 +43,44 @@ const headerAliases: Record<keyof TradePayload, string[]> = {
   tags: ["tags", "etiquetas"],
 };
 
+const monthAliases: Record<string, string> = {
+  january: "01",
+  enero: "01",
+  jan: "01",
+  february: "02",
+  febrero: "02",
+  feb: "02",
+  march: "03",
+  marzo: "03",
+  mar: "03",
+  april: "04",
+  abril: "04",
+  apr: "04",
+  may: "05",
+  mayo: "05",
+  june: "06",
+  junio: "06",
+  jun: "06",
+  july: "07",
+  julio: "07",
+  jul: "07",
+  august: "08",
+  agosto: "08",
+  aug: "08",
+  september: "09",
+  septiembre: "09",
+  sep: "09",
+  october: "10",
+  octubre: "10",
+  oct: "10",
+  november: "11",
+  noviembre: "11",
+  nov: "11",
+  december: "12",
+  diciembre: "12",
+  dec: "12",
+};
+
 function normalizeHeader(value: string) {
   return value
     .trim()
@@ -94,6 +132,15 @@ function parseCsv(text: string) {
   rows.push(row);
 
   return rows.filter((csvRow) => csvRow.some((cell) => cell.trim().length > 0));
+}
+
+function createNamedIndex(headers: string[]) {
+  return new Map(headers.map((header, index) => [normalizeHeader(header), index]));
+}
+
+function getNamedCell(row: string[], headerIndex: Map<string, number>, header: string) {
+  const index = headerIndex.get(normalizeHeader(header));
+  return index === undefined ? "" : row[index]?.trim() ?? "";
 }
 
 function createHeaderMap(headers: string[]) {
@@ -184,6 +231,127 @@ function formatZodError(error: ZodError) {
   return field ? `${field}: ${firstIssue.message}` : firstIssue.message;
 }
 
+function parseStatementDate(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return new Date().toISOString().slice(0, 10);
+
+  const isoMatch = trimmed.match(/(\d{4})-(\d{2})-(\d{2})/);
+  if (isoMatch) return `${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}`;
+
+  const namedMonthMatch = trimmed.match(/^([^,\d]+)\s+(\d{1,2}),\s*(\d{4})$/);
+  if (namedMonthMatch) {
+    const month = monthAliases[normalizeHeader(namedMonthMatch[1])];
+    const day = namedMonthMatch[2].padStart(2, "0");
+    if (month) return `${namedMonthMatch[3]}-${month}-${day}`;
+  }
+
+  const parsed = new Date(trimmed);
+  return Number.isNaN(parsed.getTime()) ? new Date().toISOString().slice(0, 10) : parsed.toISOString().slice(0, 10);
+}
+
+function getStatementPeriodDate(rows: string[][]) {
+  const periodRow = rows.find((row) => normalizeHeader(row[0] ?? "") === "statement" && normalizeHeader(row[2] ?? "") === "period");
+  return parseStatementDate(periodRow?.[3] ?? "");
+}
+
+function findSection(rows: string[][], sectionName: string) {
+  const normalizedSection = normalizeHeader(sectionName);
+  const headerRowIndex = rows.findIndex(
+    (row) => normalizeHeader(row[0] ?? "") === normalizedSection && normalizeHeader(row[1] ?? "") === "header",
+  );
+
+  if (headerRowIndex < 0) {
+    return null;
+  }
+
+  const headers = rows[headerRowIndex].slice(2);
+  const dataRows = rows
+    .slice(headerRowIndex + 1)
+    .filter((row) => normalizeHeader(row[0] ?? "") === normalizedSection && normalizeHeader(row[1] ?? "") === "data")
+    .map((row, index) => ({ rowNumber: headerRowIndex + index + 2, values: row.slice(2) }));
+
+  return { headers, dataRows };
+}
+
+function parseBrokerStatementImport(rows: string[][], t: Translate): ParsedTradeImport | null {
+  const openPositions = findSection(rows, "Posiciones abiertas") ?? findSection(rows, "Open Positions");
+
+  if (!openPositions) {
+    return null;
+  }
+
+  const instruments = findSection(rows, "Información de instrumento financiero") ?? findSection(rows, "Financial Instrument Information");
+  const instrumentTypes = new Map<string, "stock" | "etf">();
+
+  if (instruments) {
+    const instrumentIndex = createNamedIndex(instruments.headers);
+    instruments.dataRows.forEach(({ values }) => {
+      const ticker = getNamedCell(values, instrumentIndex, "Símbolo").toUpperCase();
+      const type = normalizeHeader(getNamedCell(values, instrumentIndex, "Tipo"));
+      if (ticker) {
+        instrumentTypes.set(ticker, type === "etf" ? "etf" : "stock");
+      }
+    });
+  }
+
+  const statementDate = getStatementPeriodDate(rows);
+  const headerIndex = createNamedIndex(openPositions.headers);
+  const schema = createTradePayloadSchema(t);
+  const trades: TradePayload[] = [];
+  const errors: TradeImportError[] = [];
+
+  openPositions.dataRows.forEach(({ rowNumber, values }) => {
+    const ticker = getNamedCell(values, headerIndex, "Símbolo").toUpperCase();
+    const quantity = Number(getNamedCell(values, headerIndex, "Cantidad"));
+    const entryPrice = getNamedCell(values, headerIndex, "Precio de coste");
+
+    if (!ticker || !Number.isFinite(quantity) || quantity === 0 || !entryPrice) {
+      return;
+    }
+
+    try {
+      trades.push(
+        schema.parse({
+          ticker,
+          assetType: instrumentTypes.get(ticker) ?? "stock",
+          direction: quantity > 0 ? "long" : "short",
+          setup: t("import.brokerStatement.setup"),
+          entryDate: statementDate,
+          exitDate: "",
+          entryPrice,
+          exitPrice: "",
+          initialStopLoss: "",
+          initialTakeProfit: "",
+          quantity: Math.abs(quantity),
+          fees: 0,
+          accountSize: "",
+          plannedRiskAmount: "",
+          thesis: t("import.brokerStatement.thesis"),
+          notes: t("import.brokerStatement.notes", { date: statementDate }),
+          mistakes: "",
+          lessonLearned: "",
+          status: "open",
+          tags: ["ibkr-import", "open-position"],
+        }),
+      );
+    } catch (error) {
+      errors.push({
+        row: rowNumber,
+        message: error instanceof ZodError ? formatZodError(error) : t("import.errors.invalidRow"),
+      });
+    }
+  });
+
+  if (trades.length === 0 && errors.length === 0) {
+    return {
+      trades,
+      errors: [{ row: 1, message: t("import.errors.noBrokerPositions") }],
+    };
+  }
+
+  return { trades, errors };
+}
+
 export function parseTradesCsvImport(csv: string, t: Translate): ParsedTradeImport {
   const rows = parseCsv(csv.replace(/^\uFEFF/, ""));
   const [headers, ...dataRows] = rows;
@@ -203,6 +371,11 @@ export function parseTradesCsvImport(csv: string, t: Translate): ParsedTradeImpo
   const missingRequired = requiredFields.filter((field) => !headerMap.has(field));
 
   if (missingRequired.length > 0) {
+    const brokerStatement = parseBrokerStatementImport(rows, t);
+    if (brokerStatement) {
+      return brokerStatement;
+    }
+
     return {
       trades,
       errors: [

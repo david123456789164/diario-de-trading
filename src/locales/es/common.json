@@ -89,7 +89,13 @@
       "invalidFile": "Sube un archivo CSV.",
       "fileTooLarge": "El CSV supera el máximo de 1 MB.",
       "tooManyRows": "Puedes importar hasta {{max}} trades por archivo.",
-      "insertFailed": "No se pudieron guardar los trades importados."
+      "insertFailed": "No se pudieron guardar los trades importados.",
+      "noBrokerPositions": "No encontramos posiciones abiertas para importar en este reporte."
+    },
+    "brokerStatement": {
+      "setup": "Importado desde broker",
+      "thesis": "Posición abierta importada desde un reporte de broker.",
+      "notes": "Importado desde reporte de actividad con fecha {{date}}."
     }
   },
   "csv": {
