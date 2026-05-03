@@ -66,6 +66,32 @@
     "seedDemoError": "No se pudieron insertar los datos demo.",
     "exportError": "No se pudieron exportar los trades."
   },
+  "import": {
+    "title": "Importar trades",
+    "description": "Sube un CSV para cargar muchas operaciones de una vez. Puedes usar la plantilla o el CSV exportado.",
+    "downloadTemplate": "Descargar plantilla",
+    "chooseFile": "Haz clic para elegir un CSV",
+    "requirements": "CSV de hasta 1 MB. Máximo 500 trades por importación.",
+    "importButton": "Importar trades",
+    "importing": "Importando...",
+    "errorsTitle": "Corrige estas filas y vuelve a subir el archivo.",
+    "rowLabel": "Fila {{row}}",
+    "toasts": {
+      "success": "Se importaron {{count}} trades.",
+      "validationError": "El CSV tiene filas que necesitan corrección.",
+      "importError": "No se pudieron importar los trades."
+    },
+    "errors": {
+      "emptyFile": "El CSV está vacío o no tiene filas de trades.",
+      "missingHeaders": "Faltan columnas obligatorias: {{headers}}.",
+      "invalidRow": "La fila no es válida.",
+      "noFile": "No se recibió ningún archivo.",
+      "invalidFile": "Sube un archivo CSV.",
+      "fileTooLarge": "El CSV supera el máximo de 1 MB.",
+      "tooManyRows": "Puedes importar hasta {{max}} trades por archivo.",
+      "insertFailed": "No se pudieron guardar los trades importados."
+    }
+  },
   "csv": {
     "headers": {
       "ticker": "Ticker",

@@ -1,6 +1,6 @@
 <svg viewBox="0 0 920 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
-  <title id="title">Ritual diario de trading</title>
-  <desc id="desc">Panel de diario de trading con checklist, grafico de velas y progreso de rutina.</desc>
+  <title id="title">Daily trading ritual</title>
+  <desc id="desc">Trading journal panel with a checklist, candlestick chart, and routine progress.</desc>
   <defs>
     <linearGradient id="bg1" x1="88" x2="820" y1="52" y2="468" gradientUnits="userSpaceOnUse">
       <stop stop-color="#17243A"/>
@@ -25,23 +25,23 @@
   <circle cx="136" cy="84" r="7" fill="#F6AD55"/>
   <circle cx="162" cy="84" r="7" fill="#3DD9B4"/>
   <rect x="202" y="72" width="118" height="24" rx="12" fill="#0B1220" stroke="#263653"/>
-  <text x="222" y="88" fill="#F3F7FF" font-family="monospace" font-size="13" font-weight="700">RUTINA</text>
+  <text x="222" y="88" fill="#F3F7FF" font-family="monospace" font-size="13" font-weight="700">ROUTINE</text>
   <rect x="340" y="72" width="86" height="24" rx="12" fill="#3DD9B4" fill-opacity=".14" stroke="#3DD9B4" stroke-opacity=".35"/>
-  <text x="360" y="88" fill="#3DD9B4" font-family="monospace" font-size="12" font-weight="700">LISTO</text>
+  <text x="360" y="88" fill="#3DD9B4" font-family="monospace" font-size="12" font-weight="700">READY</text>
 
   <rect x="102" y="142" width="306" height="266" rx="24" fill="#0B1220" stroke="#263653"/>
   <text x="132" y="184" fill="#F3F7FF" font-family="monospace" font-size="25" font-weight="700">Ritual</text>
-  <text x="132" y="210" fill="#90A0BC" font-family="monospace" font-size="13">Plan claro. Mente calma.</text>
+  <text x="132" y="210" fill="#90A0BC" font-family="monospace" font-size="13">Clear plan. Calm mind.</text>
   <g stroke-linecap="round" font-family="monospace">
     <circle cx="138" cy="254" r="13" fill="#3DD9B4" fill-opacity=".14" stroke="#3DD9B4"/>
     <path d="M132 254L137 259L147 247" fill="none" stroke="#3DD9B4" stroke-width="3"/>
-    <text x="168" y="259" fill="#F3F7FF" font-size="15">Plan antes de entrar</text>
+    <text x="168" y="259" fill="#F3F7FF" font-size="15">Plan before entry</text>
     <circle cx="138" cy="302" r="13" fill="#3DD9B4" fill-opacity=".14" stroke="#3DD9B4"/>
     <path d="M132 302L137 307L147 295" fill="none" stroke="#3DD9B4" stroke-width="3"/>
-    <text x="168" y="307" fill="#F3F7FF" font-size="15">Riesgo definido</text>
+    <text x="168" y="307" fill="#F3F7FF" font-size="15">Risk defined</text>
     <circle cx="138" cy="350" r="13" fill="#67B3FF" fill-opacity=".12" stroke="#67B3FF"/>
     <path d="M132 350L137 355L147 343" fill="none" stroke="#67B3FF" stroke-width="3"/>
-    <text x="168" y="355" fill="#F3F7FF" font-size="15">Revision al cerrar</text>
+    <text x="168" y="355" fill="#F3F7FF" font-size="15">Review after exit</text>
   </g>
 
   <rect x="442" y="142" width="368" height="266" rx="24" fill="#0A111D" stroke="#263653"/>

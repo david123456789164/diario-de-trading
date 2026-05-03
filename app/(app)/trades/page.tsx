@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { TradeImportCard } from "@/components/trades/trade-import-card";
 import { TradeFiltersBar } from "@/components/trades/trade-filters";
 import { TradesTable } from "@/components/trades/trades-table";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,8 @@ export default async function TradesPage({
           </Link>
         }
       />
+
+      <TradeImportCard />
 
       <TradeFiltersBar filters={filters} setups={meta.setups} />
 
