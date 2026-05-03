@@ -3,7 +3,6 @@ import Link from "next/link";
 import { EquityCurveChart } from "@/components/charts/equity-curve-chart";
 import { MonthlyPnlChart } from "@/components/charts/monthly-pnl-chart";
 import { PerformanceBarChart } from "@/components/charts/performance-bar-chart";
-import { TradingJournalIllustration } from "@/components/dashboard/trading-journal-illustration";
 import { EmptyState } from "@/components/ui/empty-state";
 import { StatCard } from "@/components/ui/stat-card";
 import { Button } from "@/components/ui/button";
@@ -34,9 +33,10 @@ export default async function DashboardPage() {
 
           <div className="relative min-h-[220px] overflow-hidden rounded-lg border border-stroke/70 bg-background/45 p-3 sm:min-h-[260px]">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_65%_20%,rgba(61,217,180,0.18),transparent_34%),radial-gradient(circle_at_12%_85%,rgba(103,179,255,0.12),transparent_30%)]" />
-            <TradingJournalIllustration
-              title={t("dashboard.title")}
-              className="relative mx-auto max-w-[480px]"
+            <img
+              src="/journal-psychology-option-1.svg"
+              alt={t("dashboard.title")}
+              className="relative mx-auto h-auto w-full max-w-[560px]"
             />
           </div>
         </div>
@@ -48,6 +48,8 @@ export default async function DashboardPage() {
           description={t("dashboard.emptyDescription")}
           actionHref="/trades/new"
           actionLabel={t("dashboard.emptyAction")}
+          illustrationSrc="/journal-psychology-option-2.svg"
+          illustrationAlt={t("dashboard.emptyTitle")}
         />
       ) : (
         <>
