@@ -65,5 +65,12 @@ export async function POST(request: Request) {
   }
 
   revalidateTradingPaths();
-  return NextResponse.json({ imported: data.length }, { status: 201 });
+  return NextResponse.json(
+    {
+      imported: data.length,
+      sourceRows: parsed.sourceRows,
+      representedPrices: parsed.representedPrices,
+    },
+    { status: 201 },
+  );
 }

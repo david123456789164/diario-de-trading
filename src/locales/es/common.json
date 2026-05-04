@@ -78,6 +78,7 @@
     "rowLabel": "Fila {{row}}",
     "toasts": {
       "success": "Se importaron {{count}} trades.",
+      "successWithPrices": "Se importaron {{count}} trades desde {{rows}} ejecuciones. Los {{prices}} precios quedaron representados como entrada o salida.",
       "validationError": "El CSV tiene filas que necesitan corrección.",
       "importError": "No se pudieron importar los trades."
     },

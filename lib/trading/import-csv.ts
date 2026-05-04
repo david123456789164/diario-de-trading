@@ -12,6 +12,8 @@ export type TradeImportError = {
 export type ParsedTradeImport = {
   trades: TradePayload[];
   errors: TradeImportError[];
+  sourceRows?: number;
+  representedPrices?: number;
 };
 
 const headerAliases: Record<keyof TradePayload, string[]> = {
@@ -515,7 +517,9 @@ function parsePersonalTradeCsv(rows: string[][], t: Translate): ParsedTradeImpor
     };
   }
 
-  return { trades, errors };
+  const representedPrices = trades.reduce((sum, trade) => sum + 1 + (trade.exitPrice !== null ? 1 : 0), 0);
+
+  return { trades, errors, sourceRows: executions.length, representedPrices };
 }
 
 export function parseTradesCsvImport(csv: string, t: Translate): ParsedTradeImport {

@@ -74,7 +74,7 @@ export function TradeImportCard() {
     });
 
     const data = (await response.json().catch(() => null)) as
-      | { imported?: number; error?: string; errors?: ImportError[] }
+      | { imported?: number; sourceRows?: number; representedPrices?: number; error?: string; errors?: ImportError[] }
       | null;
 
     setImporting(false);
@@ -90,7 +90,15 @@ export function TradeImportCard() {
       return;
     }
 
-    toast.success(t("import.toasts.success", { count: data?.imported ?? 0 }));
+    toast.success(
+      data?.representedPrices
+        ? t("import.toasts.successWithPrices", {
+            count: data.imported ?? 0,
+            prices: data.representedPrices,
+            rows: data.sourceRows ?? data.representedPrices,
+          })
+        : t("import.toasts.success", { count: data?.imported ?? 0 }),
+    );
     setSelectedFile(null);
     router.refresh();
   }

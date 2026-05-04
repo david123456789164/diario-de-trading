@@ -448,6 +448,7 @@
     "rowLabel": "שורה {{row}}",
     "toasts": {
       "success": "יובאו {{count}} עסקאות.",
+      "successWithPrices": "יובאו {{count}} טריידים מתוך {{rows}} פעולות. כל {{prices}} המחירים נשמרו ככניסה או יציאה.",
       "validationError": "בקובץ ה-CSV יש שורות שצריך לתקן.",
       "importError": "לא ניתן היה לייבא את העסקאות."
     },
