@@ -96,6 +96,12 @@
       "setup": "Importado desde broker",
       "thesis": "Posición abierta importada desde un reporte de broker.",
       "notes": "Importado desde reporte de actividad con fecha {{date}}."
+    },
+    "personalCsv": {
+      "setup": "Importado desde CSV personal",
+      "thesis": "Trade importado desde el historial personal.",
+      "notes": "Entrada y salida emparejadas automáticamente desde el CSV.",
+      "openNotes": "Ejecución sin pareja encontrada en el CSV; se importó como trade abierto."
     }
   },
   "csv": {

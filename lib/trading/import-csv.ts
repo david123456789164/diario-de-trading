@@ -352,6 +352,172 @@ function parseBrokerStatementImport(rows: string[][], t: Translate): ParsedTrade
   return { trades, errors };
 }
 
+function parseCompactDate(value: string) {
+  const trimmed = value.trim();
+  const compact = trimmed.match(/^(\d{4})(\d{2})(\d{2})$/);
+  if (compact) {
+    return `${compact[1]}-${compact[2]}-${compact[3]}`;
+  }
+
+  return parseStatementDate(trimmed);
+}
+
+function getOptionalQuantity(row: string[], headerIndex: Map<string, number>) {
+  const rawQuantity =
+    getNamedCell(row, headerIndex, "Quantity") ||
+    getNamedCell(row, headerIndex, "Qty") ||
+    getNamedCell(row, headerIndex, "Shares") ||
+    getNamedCell(row, headerIndex, "Cantidad");
+  const quantity = Number(rawQuantity);
+  return Number.isFinite(quantity) && quantity > 0 ? quantity : 1;
+}
+
+function parsePersonalTradeCsv(rows: string[][], t: Translate): ParsedTradeImport | null {
+  const [headers, ...dataRows] = rows;
+  if (!headers) return null;
+
+  const headerIndex = createNamedIndex(headers);
+  const hasPersonalFormat =
+    headerIndex.has("symbol") &&
+    headerIndex.has("tradedate") &&
+    headerIndex.has("tradeprice") &&
+    headerIndex.has("buy/sell");
+
+  if (!hasPersonalFormat) {
+    return null;
+  }
+
+  type Execution = {
+    rowNumber: number;
+    ticker: string;
+    date: string;
+    price: string;
+    side: "BUY" | "SELL";
+    quantity: number;
+  };
+
+  const schema = createTradePayloadSchema(t);
+  const executions: Execution[] = [];
+  const errors: TradeImportError[] = [];
+
+  dataRows.forEach((row, index) => {
+    const ticker = getNamedCell(row, headerIndex, "Symbol").toUpperCase();
+    const date = parseCompactDate(getNamedCell(row, headerIndex, "TradeDate"));
+    const price = getNamedCell(row, headerIndex, "TradePrice");
+    const side = getNamedCell(row, headerIndex, "Buy/Sell").toUpperCase();
+    const quantity = getOptionalQuantity(row, headerIndex);
+
+    if (!ticker && !price && !side) return;
+
+    if (!ticker || !price || (side !== "BUY" && side !== "SELL")) {
+      errors.push({ row: index + 2, message: t("import.errors.invalidRow") });
+      return;
+    }
+
+    executions.push({
+      rowNumber: index + 2,
+      ticker,
+      date,
+      price,
+      side,
+      quantity,
+    });
+  });
+
+  const pendingByTicker = new Map<string, Execution[]>();
+  const trades: TradePayload[] = [];
+
+  function addTrade(payload: Record<string, unknown>, rowNumber: number) {
+    try {
+      trades.push(schema.parse(payload));
+    } catch (error) {
+      errors.push({
+        row: rowNumber,
+        message: error instanceof ZodError ? formatZodError(error) : t("import.errors.invalidRow"),
+      });
+    }
+  }
+
+  executions.forEach((execution) => {
+    const pending = pendingByTicker.get(execution.ticker) ?? [];
+    const oppositeIndex = pending.findIndex((item) => item.side !== execution.side);
+
+    if (oppositeIndex >= 0) {
+      const entry = pending.splice(oppositeIndex, 1)[0];
+      const isLong = entry.side === "BUY";
+
+      addTrade(
+        {
+          ticker: entry.ticker,
+          assetType: "stock",
+          direction: isLong ? "long" : "short",
+          setup: t("import.personalCsv.setup"),
+          entryDate: entry.date,
+          exitDate: execution.date,
+          entryPrice: entry.price,
+          exitPrice: execution.price,
+          initialStopLoss: "",
+          initialTakeProfit: "",
+          quantity: Math.min(entry.quantity, execution.quantity),
+          fees: 0,
+          accountSize: "",
+          plannedRiskAmount: "",
+          thesis: t("import.personalCsv.thesis"),
+          notes: t("import.personalCsv.notes"),
+          mistakes: "",
+          lessonLearned: "",
+          status: "closed",
+          tags: ["personal-csv-import"],
+        },
+        execution.rowNumber,
+      );
+    } else {
+      pending.push(execution);
+    }
+
+    pendingByTicker.set(execution.ticker, pending);
+  });
+
+  pendingByTicker.forEach((pending) => {
+    pending.forEach((entry) => {
+      addTrade(
+        {
+          ticker: entry.ticker,
+          assetType: "stock",
+          direction: entry.side === "BUY" ? "long" : "short",
+          setup: t("import.personalCsv.setup"),
+          entryDate: entry.date,
+          exitDate: "",
+          entryPrice: entry.price,
+          exitPrice: "",
+          initialStopLoss: "",
+          initialTakeProfit: "",
+          quantity: entry.quantity,
+          fees: 0,
+          accountSize: "",
+          plannedRiskAmount: "",
+          thesis: t("import.personalCsv.thesis"),
+          notes: t("import.personalCsv.openNotes"),
+          mistakes: "",
+          lessonLearned: "",
+          status: "open",
+          tags: ["personal-csv-import", "open-execution"],
+        },
+        entry.rowNumber,
+      );
+    });
+  });
+
+  if (trades.length === 0 && errors.length === 0) {
+    return {
+      trades,
+      errors: [{ row: 1, message: t("import.errors.emptyFile") }],
+    };
+  }
+
+  return { trades, errors };
+}
+
 export function parseTradesCsvImport(csv: string, t: Translate): ParsedTradeImport {
   const rows = parseCsv(csv.replace(/^\uFEFF/, ""));
   const [headers, ...dataRows] = rows;
@@ -371,6 +537,11 @@ export function parseTradesCsvImport(csv: string, t: Translate): ParsedTradeImpo
   const missingRequired = requiredFields.filter((field) => !headerMap.has(field));
 
   if (missingRequired.length > 0) {
+    const personalCsv = parsePersonalTradeCsv(rows, t);
+    if (personalCsv) {
+      return personalCsv;
+    }
+
     const brokerStatement = parseBrokerStatementImport(rows, t);
     if (brokerStatement) {
       return brokerStatement;
