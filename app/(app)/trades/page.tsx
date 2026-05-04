@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { DeleteAllTradesButton } from "@/components/trades/delete-all-trades-button";
 import { TradeImportCard } from "@/components/trades/trade-import-card";
 import { TradeFiltersBar } from "@/components/trades/trade-filters";
 import { TradesTable } from "@/components/trades/trades-table";
@@ -29,9 +30,12 @@ export default async function TradesPage({
         title={t("trades.list.title")}
         description={t("trades.list.description")}
         actions={
-          <Link href="/trades/new">
-            <Button>{t("common.actions.newTrade")}</Button>
-          </Link>
+          <div className="flex flex-wrap gap-3">
+            <DeleteAllTradesButton />
+            <Link href="/trades/new">
+              <Button>{t("common.actions.newTrade")}</Button>
+            </Link>
+          </div>
         }
       />
 

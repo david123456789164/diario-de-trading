@@ -64,7 +64,8 @@
     "linkImageError": "La imagen se subió, pero no se pudo vincular al trade.",
     "deleteImageError": "No se pudo eliminar la imagen.",
     "seedDemoError": "No se pudieron insertar los datos demo.",
-    "exportError": "No se pudieron exportar los trades."
+    "exportError": "No se pudieron exportar los trades.",
+    "deleteAllTradesError": "No se pudieron eliminar todas las operaciones."
   },
   "import": {
     "title": "Importar trades",
@@ -170,6 +171,14 @@
       "deleteConfirm": "Sí, eliminar",
       "deleteError": "No se pudo eliminar el trade.",
       "deleteSuccess": "Trade eliminado correctamente."
+    },
+    "deleteAll": {
+      "button": "Borrar todas",
+      "title": "Borrar todas las operaciones",
+      "description": "Se eliminarán todas tus operaciones y sus screenshots asociados. Esta acción no se puede deshacer.",
+      "confirm": "Sí, borrar todo",
+      "success": "Se eliminaron {{count}} operaciones.",
+      "error": "No se pudieron eliminar todas las operaciones."
     },
     "form": {
       "labels": {
