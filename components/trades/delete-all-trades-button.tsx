@@ -18,7 +18,7 @@ export function DeleteAllTradesButton() {
   async function deleteAllTrades() {
     setDeleting(true);
 
-    const response = await fetch("/api/trades/bulk", {
+    const response = await fetch("/api/trades-bulk", {
       method: "DELETE",
       headers: {
         "X-App-Language": i18n.language,
